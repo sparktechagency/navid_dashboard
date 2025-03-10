@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from 'react';
 import {
   Chart as ChartJS,
   LineElement,
@@ -7,9 +7,10 @@ import {
   PointElement,
   Filler,
   Tooltip,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
-import { Select } from "antd";
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import { Select } from 'antd';
+import { useGetOverViewQuery } from '../../Redux/services/overViewApis';
 
 ChartJS.register(
   LineElement,
@@ -22,37 +23,26 @@ ChartJS.register(
 
 const SubscriptionGrowth = () => {
   const canvasRef = useRef(null);
-  const yearOptions = Array.from({
-    length: new Date().getFullYear() - 2024 + 1,
-  }).map((_, i) => (
-    <Select.Option key={2024 + i} value={2024 + i}>
-      {2024 + i}
-    </Select.Option>
-  ));
-
-  const currentYear = new Date().getFullYear();
-  const [year, setYear] = useState(currentYear);
-
+  const [year, setYear] = useState(new Date().getFullYear());
+  console.log(year);
+  const { data: userGrowth, isLoading } = useGetOverViewQuery({
+    year_payment: year,
+  });
+  const yearOptions = userGrowth?.payment_year.map((yr, i) => {
+    console.log(yr);
+    return (
+      <Select.Option key={2024 + i} value={yr}>
+        {yr}
+      </Select.Option>
+    );
+  });
   const data = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
+    labels: userGrowth?.earningGrowth?.monthNames,
     datasets: [
       {
-        label: "Overview data",
-        data: [5, 15, 10, 25, 20, 30, 25, 40, 35, 45, 40, 50],
-        borderColor: "#094c3f",
+        label: 'Overview data',
+        data: userGrowth?.earningGrowth?.data,
+        borderColor: '#094c3f',
         borderWidth: 3,
         fill: true,
         backgroundColor: (context) => {
@@ -65,12 +55,12 @@ const SubscriptionGrowth = () => {
             0,
             chartArea.bottom
           );
-          gradient.addColorStop(0, "#3872F0");
-          gradient.addColorStop(1, "#3872F0");
+          gradient.addColorStop(0, '#3872F0');
+          gradient.addColorStop(1, '#3872F0');
           return gradient;
         },
         tension: 0.4,
-        pointRadius: 5, 
+        pointRadius: 5,
         pointHoverRadius: 7,
         // pointBackgroundColor: "#094c3f",
       },
@@ -104,7 +94,7 @@ const SubscriptionGrowth = () => {
     plugins: {
       tooltip: {
         enabled: true,
-        mode: "nearest",
+        mode: 'nearest',
         intersect: false,
         callbacks: {
           label: (tooltipItem) => `Value: ${tooltipItem.raw}`,
@@ -122,7 +112,7 @@ const SubscriptionGrowth = () => {
     responsive: true,
     maintainAspectRatio: false,
     hover: {
-      mode: "nearest",
+      mode: 'nearest',
       intersect: false,
     },
   };
@@ -130,7 +120,7 @@ const SubscriptionGrowth = () => {
   return (
     <div className=" bg-[#fff] rounded p-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-[#222]">Subscription Growth</h1>
+        <h1 className="text-[#222]">Earning Growth</h1>
         <Select
           defaultValue={year}
           style={{ width: 120 }}

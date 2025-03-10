@@ -15,7 +15,7 @@ const PageHeading = ({ text, content }) => {
         <button className="text-[#222] bg-[var(--black-600)] p-2 rounded-md text-2xl">
           <IoMdArrowBack />
         </button>
-        <p className="text-lg font-medium text-[#222]">{text}</p>
+        <p className="text-lg font-medium text-[#222] mt-3">{text}</p>
       </div>
     </div>
   );

@@ -5,8 +5,6 @@ import { SettingLinks, SidebarLink } from "../../Utils/Sideber/SidebarLink.jsx";
 import { IoSettings } from "react-icons/io5";
 import Button from "./Button.jsx";
 import { MdArrowForwardIos } from "react-icons/md";
-import { HiLogout } from "react-icons/hi";
-// import logo from "../../assets/logo.png";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -28,7 +26,7 @@ const Sidebar = () => {
   }, [ref, location.pathname]);
 
   return (
-    <div className=" px-4 pb-10 flex justify-start flex-col gap-3 sidebar">
+    <div className=" px-4 pb-10 flex justify-start flex-col gap-3">
       {/* <p className='text-6xl text-center text-[var(--bg-white)] my-4 font-bold'>ilera</p> */}
       {SidebarLink?.map((item) => (
         <NavLink

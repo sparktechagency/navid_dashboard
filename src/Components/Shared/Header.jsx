@@ -1,24 +1,33 @@
 import React from 'react';
 import { Avatar, Button, Dropdown, Menu } from 'antd';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import logo from '../../assets/logo.svg';
+import toast from 'react-hot-toast';
+import { useGetProfileDataQuery } from '../../Redux/services/profileApis';
+import { imageUrl } from '../../Utils/server';
 function Header() {
+  const route = useNavigate();
+  const { data: profileData, isLoading: profileLoading } =
+    useGetProfileDataQuery();
   const user = {
-    photoURL: 'https://cdn-icons-png.flaticon.com/512/219/219988.png',
-    displayName: 'Micheal Scott',
-    email: 'Micheal46@gmail.com',
+    photoURL: profileData?.data?.img,
+    displayName: profileData?.data?.name,
+    email: profileData?.data?.email,
   };
 
+ 
+
   const handleSignOut = () => {
-    console.log('sign out');
-    window.location.href = '/login';
+    localStorage.removeItem('token');
+    toast.success('Logout successful');
+    route('/login');
   };
 
   const menu = (
     <Menu className="w-fit rounded-xl shadow-lg">
       <div className="p-4 flex items-center gap-3">
-        <Avatar size={48} src={user?.photoURL} />
+        <Avatar size={48} src={imageUrl(user?.photoURL)} />
         <div>
           <h1 className="font-semibold text-base">{user?.displayName}</h1>
           <h1 className="font-normal opacity-75 text-sm">{user?.email}</h1>
@@ -37,13 +46,21 @@ function Header() {
   );
 
   return (
-    <div className="px-10 border-b-[1px] border-[#6d6d6d] h-16 flex justify-between items-center">
+    <div className="px-10 shadow shadow-white bg-white h-16 flex justify-between items-center">
       <img className="h-8" src={logo} alt="DealScout" />
-      <div className="flex items-center  gap-4 text-2xl">
-        <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
-          <Avatar size={40} src={user?.photoURL} className="cursor-pointer" />
-        </Dropdown>
-      </div>
+      {profileLoading ? (
+        ''
+      ) : (
+        <div className="flex items-center  gap-4 text-2xl">
+          <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
+            <Avatar
+              size={40}
+              src={imageUrl(user?.photoURL)}
+              className="cursor-pointer"
+            />
+          </Dropdown>
+        </div>
+      )}
     </div>
   );
 }

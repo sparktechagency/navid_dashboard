@@ -1,88 +1,85 @@
-import React, { useState, useRef, useEffect, use } from 'react';
+import React, { useState } from 'react';
 import { Typography, Input, Button } from 'antd';
-import { Link, useNavigate } from 'react-router';
-
-// import Logo from '../../components/ui/Logo';
+import { useNavigate } from 'react-router';
+import { useVerifyOtpMutation } from '../../Redux/services/authApis';
+import toast from 'react-hot-toast';
 
 const { Title, Text } = Typography;
 
 const Otp = () => {
   const router = useNavigate();
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const inputsRef = useRef([]);
+  const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
+  const [otp, setOtp] = useState('');
+  const handleContinue = async () => {
+    try {
+      const email = localStorage.getItem('email');
+      if (!email) {
+        toast.error('Email not found');
+        return;
+      }
+      const data = {
+        email,
+        code: otp,
+      };
 
-  const handleChange = (index, value) => {
-    if (!/^\d*$/.test(value)) return;
+      const res = await verifyOtp({ data }).unwrap();
 
-    let newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    if (value && index < 5) {
-      inputsRef.current[index + 1].focus();
+      if (res?.success) {
+        console.log(res);
+        toast.success('OTP verified successfully');
+        localStorage.setItem('resetToken', res?.data?.resetToken);
+        router('/reset-password');
+      } else {
+        toast.error('Invalid OTP');
+      }
+    } catch (error) {
+      console.error('Verify OTP Error:', error);
+      toast.error(
+        error?.data?.message || error?.message || 'An unexpected error occurred'
+      );
     }
-  };
-
-  const handleKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputsRef.current[index - 1].focus();
-    }
-  };
-
-  const handleContinue = () => {
-    console.log('OTP:', otp.join(''));
-    router('/reset-password');
   };
 
   return (
-    <div className="flex justify-center  items-center min-h-screen bg-[#3872F0] p-4">
-      <div className="bg-white shadow-lg relative rounded-2xl p-6 w-full max-w-lg text-center">
-        <Title level={3} className="text-blue-500">
-          {/* <Logo /> */}
-        </Title>
-        <div className="flex items-start flex-col text-start">
+    <div className="flex justify-center items-center min-h-screen bg-[#3872F0] p-4">
+      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg text-center">
+        <div className="text-start">
           <Title level={3} className="mb-2">
             Reset Password
           </Title>
-          <h1 className="text-sm font-extralight text-[var(--text)]">
+          <Text>
             We sent a 6-digit OTP to{' '}
             <strong className="text-[#111]">micheal@gmail.com</strong>. Please
-            input it below.
-          </h1>
+            enter it below.
+          </Text>
         </div>
 
-        <div className="flex justify-center gap-2 my-4">
-          {otp.map((value, index) => (
-            <Input
-              key={index}
-              ref={(el) => (inputsRef.current[index] = el)}
-              maxLength={1}
-              value={value}
-              onChange={(e) => handleChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              className="text-center text-xl w-12 h-12 border-2 border-blue-400"
-            />
-          ))}
+        <div className="flex justify-center my-4">
+          <Input.OTP
+            length={6}
+            value={otp}
+            onChange={setOtp}
+            className="text-center text-xl w-full"
+          />
         </div>
 
         <Button
           type="primary"
-          className={`w-full ${
-            otp.includes('') ? '!bg-[#fafafa]' : '!bg-[#3872F0]'
-          }`}
-          disabled={otp.includes('')}
+          className="w-full !bg-[#3872F0]"
+          disabled={otp.length < 6}
+          loading={isLoading}
           onClick={handleContinue}
         >
           Continue
         </Button>
 
         <div className="mt-3">
-          <h1
+          <Text
             onClick={() => router('/otp')}
             className="text-[#3872F0] cursor-pointer hover:underline"
           >
             Resend OTP
-          </h1>
+          </Text>
         </div>
       </div>
     </div>

@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { Button, Form, Input, Spin } from "antd";
-// import { usePatchNewPasswordMutation } from "../../Redux/api/authApis";
+import React, { useState } from 'react';
+import { Button, Form, Input, Spin } from 'antd';
+import { usePatchNewPasswordMutation } from '../../Redux/services/authApis';
 
 const ChangePassword = () => {
   const [form] = Form.useForm();
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  //   const [setNewPassword, { isLoading: isNewPassChange }] =
-  // usePatchNewPasswordMutation({});
+  const [setNewPassword, { isLoading: isNewPassChange }] =
+    usePatchNewPasswordMutation({});
   const toggleOldPassword = () => {
     setShowOldPassword(!showOldPassword);
   };
@@ -21,19 +21,19 @@ const ChangePassword = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
   const onFinish = async (values) => {
-    console.log("Success:", values);
-    // const ChangePasswordDatas = {
-    //   oldPassword: values.oldPassword,
-    //   newPassword: values.newPassword,
-    //   confirmPassword: values.confirmPassword,
-    // };
-    // try {
-    //   await setNewPassword(ChangePasswordDatas).unwrap();
-    //   message.success("Password Changed successfully.");
-    // } catch (error) {
-    //   console.error("Failed to change password:", error);
-    //   message.error("Failed to change Password.");
-    // }
+    console.log('Success:', values);
+    const ChangePasswordDatas = {
+      oldPassword: values.oldPassword,
+      newPassword: values.newPassword,
+      confirmPassword: values.confirmPassword,
+    };
+    try {
+      await setNewPassword(ChangePasswordDatas).unwrap();
+      message.success('Password Changed successfully.');
+    } catch (error) {
+      console.error('Failed to change password:', error);
+      message.error('Failed to change Password.');
+    }
   };
   return (
     <Form
@@ -43,25 +43,25 @@ const ChangePassword = () => {
       layout="vertical"
     >
       <Form.Item
-        type={showOldPassword ? "text" : "password"}
+        type={showOldPassword ? 'text' : 'password'}
         name="oldPassword"
         label={<span className="text-black">Old Password</span>}
         rules={[
           {
             required: true,
-            message: "name is required",
+            message: 'name is required',
           },
         ]}
       >
         <Input.Password
           style={{
-            width: "100%",
+            width: '100%',
             height: 40,
-            border: "none",
-            borderRadius: "5px",
-            color: "#111",
-            backgroundColor: "#fff",
-            outline: "none",
+            border: 'none',
+            borderRadius: '5px',
+            color: '#111',
+            backgroundColor: '#fff',
+            outline: 'none',
           }}
           className=" p-2 w-full outline-none"
         />
@@ -73,19 +73,19 @@ const ChangePassword = () => {
         rules={[
           {
             required: true,
-            message: "name is required",
+            message: 'name is required',
           },
         ]}
       >
         <Input.Password
           style={{
-            width: "100%",
+            width: '100%',
             height: 40,
-            border: "none",
-            borderRadius: "5px",
-            color: "#111",
-            backgroundColor: "#fff",
-            outline: "none",
+            border: 'none',
+            borderRadius: '5px',
+            color: '#111',
+            backgroundColor: '#fff',
+            outline: 'none',
           }}
           className=" p-2 w-full outline-none"
         />
@@ -97,19 +97,19 @@ const ChangePassword = () => {
         rules={[
           {
             required: true,
-            message: "phone number is required",
+            message: 'phone number is required',
           },
         ]}
       >
         <Input.Password
           style={{
-            width: "100%",
+            width: '100%',
             height: 40,
-            border: "none",
-            borderRadius: "5px",
-            color: "#111",
-            backgroundColor: "#fff",
-            outline: "none",
+            border: 'none',
+            borderRadius: '5px',
+            color: '#111',
+            backgroundColor: '#fff',
+            outline: 'none',
           }}
           className=" p-2 w-full outline-none"
         />

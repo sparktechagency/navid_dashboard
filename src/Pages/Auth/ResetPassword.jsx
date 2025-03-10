@@ -3,20 +3,41 @@ import { Form, Button, Typography, Input } from 'antd';
 import 'antd/dist/reset.css';
 import { EyeTwoTone } from '@ant-design/icons';
 import { useNavigate } from 'react-router';
-
+import { useResetPasswordMutation } from '../../Redux/services/authApis';
+import toast from 'react-hot-toast';
 
 const { Title } = Typography;
 
 const ResetPassword = () => {
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
   const route = useNavigate();
-  const onFinish = (values) => {
-    if (values.password !== values.confirmPassword) {
-      return Promise.reject(new Error('Passwords do not match!'));
+  const onFinish = async (values) => {
+    console.log(values);
+
+    try {
+      if (values.password !== values.confirmPassword) {
+        return Promise.reject(new Error('Passwords do not match!'));
+      }
+      const data = {
+        password: values?.password,
+        confirm_password: values?.confirmPassword,
+      };
+      const res = await resetPassword({ data }).unwrap();
+      if (res?.success) {
+        toast.success('Password reset successfully');
+        route('/login');
+      } else {
+        toast.error('Password reset failed');
+      }
+      np;
+    } catch (error) {
+      console.error('Reset Password Error:', error);
+      toast.error(
+        error?.data?.message || error?.message || 'An unexpected error occurred'
+      );
     }
-    console.log('Success:', values);
-    route('/login');
   };
 
   const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -43,7 +64,14 @@ const ResetPassword = () => {
             name="password"
             rules={[
               { required: true, message: 'Please enter your password' },
-              { min: 8, message: 'Password must be at least 8 characters' },
+              {
+                min: 8,
+                // pattern: new RegExp('^(?=.*[a-z])(?=.*[A-Z])'),
+                message: 'Password must be at least 8 characters',
+              },
+              //   message:
+              //     'Password must be at least 8 characters & contain at least one uppercase letter',
+              // },
             ]}
           >
             <Input.Password

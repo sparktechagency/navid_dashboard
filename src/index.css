@@ -1,5 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import 'tailwindcss';
 
 :root {
   --bg-green-high: #222;
@@ -30,7 +30,7 @@
   @apply px-8 py-3 rounded-md flex justify-center items-center w-fit gap-2 bg-[var(--bg-green-high)] text-[var(--text-gray)]  hover:scale-105 transition-all active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100;
 } */
 * {
-  font-family: "Poppins";
+  font-family: 'Poppins';
 }
 
 .scroll-bar-hide::-webkit-scrollbar {
@@ -50,7 +50,7 @@ body::-webkit-scrollbar {
 
 body {
   background: var(--color-white);
-  font-family: "Poppins", serif;
+  font-family: 'Poppins', serif;
 }
 
 @layer utilities {
@@ -131,89 +131,12 @@ body {
 }
 
 .links::after {
-  content: "";
+  content: '';
 }
 
-.jodit-status-bar {
-  display: none;
-}
 
-.jodit-ui-spacer {
-  background-color: #323232 !important;
-}
-.jodit-workplace + .jodit-status-bar:not(:empty) {
-  display: none;
-}
-
-.jodit-toolbar-button.jodit-toolbar-button_size_middle.jodit-toolbar-button_variant_initial.jodit-toolbar-button_font.jodit-toolbar-button_with-trigger_true.jodit-ui-group__font {
-  display: none;
-}
-
-/* .jodit-ui-group.jodit-ui-group_separated_true.jodit-ui-group_group_list.jodit-ui-group_size_middle {
-  display: none;
-} */
-
-.jodit-ui-spacer {
-  display: none;
-}
-
-.jodit-ui-group.jodit-ui-group_separated_true.jodit-ui-group_group_media.jodit-ui-group_size_middle {
-  display: none;
-}
-
-/* .jodit-ui-group.jodit-ui-group_separated_true.jodit-ui-group_group_state.jodit-ui-group_size_middle {
-  display: none;
-} */
-
-.jodit-ui-group.jodit-ui-group_separated_true.jodit-ui-group_group_insert.jodit-ui-group_size_middle {
-  display: none;
-}
-
-.jodit-ui-group.jodit-ui-group_separated_true.jodit-ui-group_group_indent.jodit-ui-group_size_middle {
-  display: none;
-}
-
-.jodit-ui-group.jodit-ui-group_separated_true.jodit-ui-group_group_color.jodit-ui-group_before-spacer_true.jodit-ui-group_size_middle {
-  display: none;
-}
-
-.jodit-ui-group.jodit-ui-group_separated_true.jodit-ui-group_group_history.jodit-ui-group_size_middle {
-  display: none;
-}
-
-.jodit-ui-group.jodit-ui-group_separated_true.jodit-ui-group_group_other.jodit-ui-group_size_middle {
-  display: none;
-}
-
-.jodit-wysiwyg {
-  background-color: #fff;
-}
-/* .ant-table-cell {
-  color: #f9f9f9 !important;
-  background-color: #323232 !important;
-  border: none !important;
-} */
-/* .ant-table-row {
-  background-color: #323232 !important;
-  border: none !important;
-} */
-/* .table-row {
-  background-color: #323232 !important;
-  border: none !important;
-} */
-/* .ant-table-cell-row-hover {
-  background-color: #323232 !important;
-  border: none !important;
-}
-.ant-table-thead tr {
-  border: none !important;
-}
-.ant-pagination-item {
-  border-radius: 100% !important;
-  background-color: #323232 !important;
-} */
 .ant-upload {
-  width: 100%  !important;
+  width: 100% !important;
 }
 .ant-pagination-item-active {
   border-radius: 100% !important;
@@ -227,4 +150,73 @@ body {
 }
 .ant-pagination-item-active a {
   color: #242424 !important;
+}
+.anticon-right {
+  color: black !important;
+}
+.anticon-left {
+  color: black !important;
+}
+
+.loader {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  margin:15px auto;
+  position: relative;
+  color: #FFF;
+  box-sizing: border-box;
+  animation: animloader 2s linear infinite;
+}
+.loader-black {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  margin:15px auto;
+  position: relative;
+  color: black;
+  box-sizing: border-box;
+  animation: animloader-black 2s linear infinite;
+}
+
+@keyframes animloader-black {
+  0% {
+    box-shadow: 14px 0 0 -2px,  38px 0 0 -2px,  -14px 0 0 -2px,  -38px 0 0 -2px;
+  }
+  25% {
+    box-shadow: 14px 0 0 -2px,  38px 0 0 -2px,  -14px 0 0 -2px,  -38px 0 0 2px;
+  }
+  50% {
+    box-shadow: 14px 0 0 -2px,  38px 0 0 -2px,  -14px 0 0 2px,  -38px 0 0 -2px;
+  }
+  75% {
+    box-shadow: 14px 0 0 2px,  38px 0 0 -2px,  -14px 0 0 -2px,  -38px 0 0 -2px;
+  }
+  100% {
+    box-shadow: 14px 0 0 -2px,  38px 0 0 2px,  -14px 0 0 -2px,  -38px 0 0 -2px;
+  }
+}
+@keyframes animloader {
+  0% {
+    box-shadow: 14px 0 0 -2px,  38px 0 0 -2px,  -14px 0 0 -2px,  -38px 0 0 -2px;
+  }
+  25% {
+    box-shadow: 14px 0 0 -2px,  38px 0 0 -2px,  -14px 0 0 -2px,  -38px 0 0 2px;
+  }
+  50% {
+    box-shadow: 14px 0 0 -2px,  38px 0 0 -2px,  -14px 0 0 2px,  -38px 0 0 -2px;
+  }
+  75% {
+    box-shadow: 14px 0 0 2px,  38px 0 0 -2px,  -14px 0 0 -2px,  -38px 0 0 -2px;
+  }
+  100% {
+    box-shadow: 14px 0 0 -2px,  38px 0 0 2px,  -14px 0 0 -2px,  -38px 0 0 -2px;
+  }
+}
+
+.ant-otp-input{
+  width: 58px;
+  height: 48px;
 }

@@ -1,4 +1,4 @@
-export const url = `http://209.97.134.184:8001`;
+export const url = import.meta.env.VITE_PUBLIC_API_URL;
 export const imageUrl = (image) => {
   return image
     ? image?.startsWith(`http`)

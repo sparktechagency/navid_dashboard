@@ -1,17 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Button, Typography } from 'antd';
 import { EyeTwoTone } from '@ant-design/icons';
 import 'antd/dist/reset.css';
 import { Link } from 'react-router';
+import { useLoginPostMutation } from '../../Redux/services/authApis';
+import toast from 'react-hot-toast';
+import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router';
-
 
 const { Title, Text } = Typography;
 const Login = () => {
+  const [setLogin, { data, isLoading }] = useLoginPostMutation();
   const route = useNavigate();
-  const onFinish = (values) => {
-    console.log('Success:', values);
-    route('/');
+  const [error, setError] = useState('');
+  const onFinish = async ({ email, password }) => {
+    try {
+      const res = await setLogin({ data: { email, password } }).unwrap();
+      console.log(res);
+      if (res?.success) {
+        localStorage.setItem('token', res?.token);
+        const token = localStorage.getItem('token');
+        try {
+          const decoded = jwtDecode(token);
+          console.log(decoded.role);
+          if (decoded.role === 'ADMIN') {
+            toast.success('Login successful');
+            route('/');
+          } else {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+          }
+        } catch (decodeError) {
+          setError('Failed to process login. Invalid token.');
+        }
+      } else {
+        toast.error(res?.message || 'Login failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Login Error:', error);
+      toast.error(
+        error?.data?.message || error?.message || 'An unexpected error occurred'
+      );
+    }
   };
 
   return (
@@ -24,9 +54,9 @@ const Login = () => {
           <Title level={3} className="mb-1">
             Welcome back,
           </Title>
-          {/* <Text type="secondary" className="text-[var(--body-text)]">
-            Continue to
-          </Text> */}
+          <Text type="secondary" className=" !text-red-500">
+            {error}
+          </Text>
         </div>
 
         <Form requiredMark={false} layout="vertical" onFinish={onFinish}>
@@ -96,7 +126,7 @@ const Login = () => {
             className="w-full !bg-[#3872F0]"
             style={{ marginTop: 10 }}
           >
-            Continue with Email
+            {isLoading ? <span class="loader"></span> : 'Continue with Email'}
           </Button>
         </Form>
       </div>

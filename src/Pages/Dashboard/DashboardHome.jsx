@@ -1,14 +1,16 @@
-import React from "react";
-import OverviewCart from "../../Components/Shared/OverviewCart";
-import UserGrowth from "../../Components/Chart/UserGrowth";
-import SubscriptionGrowth from "../../Components/Chart/SubscriptionGrowth";
-import NewSubscrider from "../../Components/Shared/NewSubscrider";
+import React from 'react';
+import OverviewCart from '../../Components/Shared/OverviewCart';
+import UserGrowth from '../../Components/Chart/UserGrowth';
+import SubscriptionGrowth from '../../Components/Chart/SubscriptionGrowth';
+import NewSubscrider from '../../Components/Shared/NewSubscrider';
+import { useGetOverViewQuery } from '../../Redux/services/overViewApis';
 function DashboardHome() {
+  const { data, isLoading } = useGetOverViewQuery({});
   const overViewDataArray = [
-    { title: "Total User", value: 1000},
-    { title: "Total Subscriber", value: 44 },
-    { title: "Total Category", value: 45 },
-    { title: "Total Earning", value: 4323 },
+    { title: 'Total User', value: data?.user },
+    { title: 'Total Category', value: data?.total_category },
+    { title: 'Total Product', value: data?.total_product },
+    { title: 'Total Earning', value: data?.total_earning },
   ];
   return (
     <div>

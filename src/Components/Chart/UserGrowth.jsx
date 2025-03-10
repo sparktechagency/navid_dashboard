@@ -1,41 +1,33 @@
-import React, { useState } from "react";
-import { Bar } from "react-chartjs-2";
+import React, { useState } from 'react';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   BarElement,
   CategoryScale,
   LinearScale,
-} from "chart.js";
-import { Select } from "antd";
+} from 'chart.js';
+import { Select } from 'antd';
+import { useGetOverViewQuery } from '../../Redux/services/overViewApis';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale);
 
 const UserGrowth = () => {
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(currentYear);
+  const { data: userData, isLoading } = useGetOverViewQuery({
+    year_user: year,
+  });
 
-  const chartData = [220, 30, 20, 50, 30, 70, 40, 90, 50, 110, 60, 20];
+
+  const chartData = userData?.userGrowth?.data;
 
   const data = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
+    labels: userData?.userGrowth?.monthNames,
     datasets: [
       {
-        label: "Monthly Data",
+        label: 'Monthly Data',
         data: chartData,
-        backgroundColor: "#007bff",
+        backgroundColor: '#007bff',
         borderRadius: 5,
       },
     ],
@@ -72,14 +64,13 @@ const UserGrowth = () => {
     console.log(`Selected Year: ${value}`);
   };
 
-  const yearOptions = [];
-  for (let i = 2024; i <= currentYear; i++) {
-    yearOptions.push(
-      <Select.Option key={i} value={i}>
-        {i}
+ const yearOptions = userData?.users_year.map((yr, i) => {
+    return (
+      <Select.Option key={2024 + i} value={yr}>
+        {yr}
       </Select.Option>
     );
-  }
+  });
 
   return (
     <div className="w-full h-full bg-[#fff] rounded-md p-4">
@@ -97,7 +88,7 @@ const UserGrowth = () => {
         <Bar
           data={{
             ...data,
-            datasets: [{ ...data.datasets[0], backgroundColor: "#3872F0" }],
+            datasets: [{ ...data.datasets[0], backgroundColor: '#3872F0' }],
           }}
           options={options}
         />
