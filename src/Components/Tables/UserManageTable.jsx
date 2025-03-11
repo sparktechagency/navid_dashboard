@@ -1,26 +1,48 @@
-import React, { useState } from "react";
-import { Popconfirm, Table, Modal } from "antd";
-import UserImage from "../../Utils/Sideber/UserImage";
-import { Space, Button } from "antd";
-import { IoEyeSharp } from "react-icons/io5";
-import { MdBlock } from "react-icons/md";
-const UserManageTable = ({ data, pagination }) => {
+import React, { useState } from 'react';
+import { Popconfirm, Table, Modal } from 'antd';
+import UserImage from '../../Utils/Sideber/UserImage';
+import { Space, Button } from 'antd';
+import { IoEyeSharp } from 'react-icons/io5';
+import { MdBlock } from 'react-icons/md';
+import {
+  useBlockUserMutation,
+  useGetAllUserQuery,
+} from '../../Redux/services/userApis';
+import toast from 'react-hot-toast';
+const UserManageTable = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const { data: userData, isLoading } = useGetAllUserQuery();
+  const [blockUser] = useBlockUserMutation();
+  console.log(userData);
   const paymentDataInformation =
-    data.map((payment, index) => ({
+    userData?.data?.map((payment, index) => ({
       key: payment._id,
       sl_No: index + 1,
       user: {
-        name: payment?.user?.name || "N/A",
-        email: payment?.user?.email || "N/A",
+        name: payment?.name || 'N/A',
+        email: payment?.email || 'N/A',
         profile_image:
-          "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg" ||
-          payment?.user?.profile_image,
-        phoneNumber: payment?.user?.phoneNumber || "N/A",
-        location: payment?.user?.location || "N/A",
+          payment?.img ||
+          'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg',
+        phoneNumber: payment?.phone || 'N/A',
+        location: payment?.location || 'N/A',
       },
     })) || [];
+
+  const handleBlock = async (id) => {
+    try {
+      const res = await blockUser({ id });
+      console.log('asdjakjsdhjasgdjhasd', res);
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'User blocked successfully');
+      } else {
+        toast.error(res?.data?.message || 'User blocked failed');
+      }
+    } catch (error) {
+      toast.error(error?.message || 'An unexpected error occurred');
+    }
+  };
   const showUserModal = (record) => {
     setSelectedUser(record.user);
     setIsModalVisible(true);
@@ -30,15 +52,15 @@ const UserManageTable = ({ data, pagination }) => {
   };
   const columns = [
     {
-      title: "Sl no.",
-      dataIndex: "sl_No",
-      key: "sl_No",
+      title: 'Sl no.',
+      dataIndex: 'sl_No',
+      key: 'sl_No',
       render: (sl_No) => <p>#{sl_No}</p>,
     },
     {
-      title: "User Info",
-      dataIndex: "user",
-      key: "user",
+      title: 'User Info',
+      dataIndex: 'user',
+      key: 'user',
       render: (user) => (
         <UserImage
           image={user?.profile_image}
@@ -48,19 +70,19 @@ const UserManageTable = ({ data, pagination }) => {
       ),
     },
     {
-      title: "Email",
-      dataIndex: ["user", "email"],
-      key: "phoneNumber",
+      title: 'Email',
+      dataIndex: ['user', 'email'],
+      key: 'phoneNumber',
     },
     {
-      title: "Location",
-      dataIndex: ["user", "location"],
-      key: "location",
+      title: 'Location',
+      dataIndex: ['user', 'location'],
+      key: 'location',
     },
     {
-      title: "Action",
-      dataIndex: "action",
-      key: "action",
+      title: 'Action',
+      dataIndex: 'action',
+      key: 'action',
       render: (_, record) => (
         <Space size="middle">
           <Button
@@ -74,7 +96,7 @@ const UserManageTable = ({ data, pagination }) => {
             placement="topLeft"
             title="Confirm Deletion"
             description="Are you sure you want to block this user?"
-            onConfirm={() => handleDelete(record.key)}
+            onConfirm={() => handleBlock(record.key)}
             okText="Yes"
             cancelText="No"
           >
@@ -90,7 +112,8 @@ const UserManageTable = ({ data, pagination }) => {
   return (
     <>
       <Table
-        rowClassName={() => "table-row"}
+        loading={isLoading}
+        rowClassName={() => 'table-row'}
         className="mt-2"
         dataSource={paymentDataInformation}
         columns={columns}

@@ -1,110 +1,86 @@
 import React, { useState } from 'react';
-import { Table, Input, Radio, Select, Button } from 'antd';
+import { Table, Input, Select, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import PageHeading from '../../Components/Shared/PageHeading';
+import {
+  useGetAllOrderQuery,
+  useUpdateOrderStatusMutation,
+} from '../../Redux/services/orderApis';
+import toast from 'react-hot-toast';
 
 const ManageProducts = () => {
-  const [status, setStatus] = useState('All');
   const [searchText, setSearchText] = useState('');
-  console.log(searchText);
-  // Dummy Data for Orders
-  const orders = [
-    {
-      orderNo: '#12333',
-      email: 'fahim@gmail.com',
-      totalItems: 4,
-      price: '$15',
-      deliveryTime: '05/12/2024',
-      status: 'Pending',
-    },
-    {
-      orderNo: '#12334',
-      email: 'nadir@gmail.com',
-      totalItems: 4,
-      price: '$15',
-      deliveryTime: '05/12/2024',
-      status: 'Packing',
-    },
-    {
-      orderNo: '#12335',
-      email: 'alamir@gmail.com',
-      totalItems: 4,
-      price: '$15',
-      deliveryTime: '05/12/2024',
-      status: 'Processing',
-    },
-    {
-      orderNo: '#12336',
-      email: 'jems@gmail.com',
-      totalItems: 4,
-      price: '$15',
-      deliveryTime: '05/12/2024',
-      status: 'Shipping',
-    },
-    {
-      orderNo: '#12337',
-      email: 'bobi@gmail.com',
-      totalItems: 4,
-      price: '$10',
-      deliveryTime: '05/12/2024',
-      status: 'Shipped',
-    },
-    // Add more dummy data if needed
-  ];
-
-  // Filter data based on the search text and status
-  const filteredData = orders.filter((order) => {
-    const matchesSearchText = order.email
-      .toLowerCase()
-      .includes(searchText.toLowerCase());
-    const matchesStatus = status === 'All' || order.status === status;
-    return matchesSearchText && matchesStatus;
+  const {
+    data: orderData,
+    isLoading: dataLoading,
+    refetch,
+  } = useGetAllOrderQuery({
+    search: searchText,
   });
+  const [updateStatus] = useUpdateOrderStatusMutation();
 
-  // Table Columns
+  const updateStatusHandle = async (id, value) => {
+    try {
+      const data = {
+        delivery_status: value,
+      };
+      const res = await updateStatus({ id, data }).unwrap();
+      toast.success('Status updated successfully');
+      refetch();
+    } catch (error) {
+      toast.error('Failed to update status');
+    }
+  };
+
+  const orders = orderData?.data || [];
+
   const columns = [
     {
       title: 'Order No',
-      dataIndex: 'orderNo',
-      key: 'orderNo',
+      dataIndex: '_id',
+      key: '_id',
+      render: (id) => `#${id.substring(0, 5)}`,
     },
     {
       title: 'User Email',
-      dataIndex: 'email',
-      key: 'email',
+      dataIndex: 'user',
+      key: 'user',
+      render: (user) => user.email,
     },
     {
       title: 'Total Items',
-      dataIndex: 'totalItems',
-      key: 'totalItems',
+      dataIndex: 'items',
+      key: 'items',
+      render: (items) =>
+        items.reduce((total, item) => total + item.quantity, 0),
     },
     {
       title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
+      dataIndex: 'total_amount',
+      key: 'total_amount',
+      render: (price) => `$ ${price.toFixed(2)}`,
     },
     {
       title: 'Delivery Time',
-      dataIndex: 'deliveryTime',
-      key: 'deliveryTime',
+      dataIndex: 'estimated_delivery_date',
+      key: 'estimated_delivery_date',
+      render: (date) => new Date(date).toLocaleDateString(),
     },
     {
       title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
+      dataIndex: 'delivery_status',
+      key: 'delivery_status',
+      render: (status, record) => (
         <Select
           defaultValue={status}
           style={{ width: 120 }}
-          onChange={(value) => {
-            // You can add functionality to handle status change if needed
-          }}
+          onChange={(value) => updateStatusHandle(record._id, value)}
         >
-          <Select.Option value="Pending">Pending</Select.Option>
-          <Select.Option value="Packing">Packing</Select.Option>
-          <Select.Option value="Processing">Processing</Select.Option>
-          <Select.Option value="Shipping">Shipping</Select.Option>
-          <Select.Option value="Shipped">Shipped</Select.Option>
+          <Select.Option value="pending">Pending</Select.Option>
+          <Select.Option value="shipped">Shipped</Select.Option>
+          <Select.Option value="packing">Packing</Select.Option>
+          <Select.Option value="processing">Processing</Select.Option>
+          <Select.Option value="shipping">Shipping</Select.Option>
         </Select>
       ),
     },
@@ -119,18 +95,17 @@ const ManageProducts = () => {
           <Input
             placeholder="Search by User Email"
             value={searchText}
-            onChange={(e) => setSearchText(
-              
-            )}
+            onChange={(e) => setSearchText(e.target.value)}
             suffix={<SearchOutlined />}
             style={{ width: 200 }}
           />
         </div>
       </div>
       <Table
-        dataSource={filteredData}
+        loading={dataLoading}
+        dataSource={orders}
         columns={columns}
-        rowKey="orderNo"
+        rowKey="_id"
         pagination={{ pageSize: 5 }}
       />
     </div>
