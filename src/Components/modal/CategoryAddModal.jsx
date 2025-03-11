@@ -1,8 +1,11 @@
-import { Form, Input, Upload, Button, message } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import React, { useState } from "react";
+import { Form, Input, Upload, Button, message } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { useCreateNewCategoryMutation } from '../../Redux/services/categoriseApis';
+import toast from 'react-hot-toast';
 
 const CategoryAddModal = ({ closeModal }) => {
+  const [createNewCategory, { isCreating }] = useCreateNewCategoryMutation();
   const [form] = Form.useForm();
   const [file, setFile] = useState(null);
   const [image, setImage] = useState(null);
@@ -11,45 +14,42 @@ const CategoryAddModal = ({ closeModal }) => {
     if (fileList.length > 0) {
       setImage(fileList[0].originFileObj);
     }
-
     setFile(fileList);
   };
 
   const onFinish = async (values) => {
-    console.log("Form data:", values);
-    console.log("Image file:", image);
-    console.log({
-      name: values.name,
-      image: image,
-    });
-
     if (!image) {
-      message.error("Please upload a category image");
+      message.error('Please upload a category image');
       return;
     }
 
     const formData = new FormData();
-    formData.append("categoryname", values.name);
+    formData.append('name', values.name);
+
     if (image) {
-      formData.append("image", image);
+      formData.append('img', image);
     } else {
-      message.error("Image is not correctly selected.");
+      message.error('Image is not correctly selected.');
       return;
     }
 
-    console.log("FormData:", formData);
-
     try {
-      // Assuming the API call or mutation is here
-      // await setNewData(formData).unwrap();
-
-      message.success("Category added successfully");
-      form.resetFields();
-      setFile([]);
-      setImage(null);
-      closeModal();
+      const response = await createNewCategory(formData).unwrap();
+      console.log(response);
+      if (response?.success) {
+        toast.success(response?.message || 'Category added successfully.');
+        form.resetFields();
+        setFile([]);
+        setImage(null);
+        closeModal();
+      } else {
+        toast.error(
+          response?.message || 'Failed to add category. Please try again.'
+        );
+      }
     } catch (error) {
-      message.error("Failed to add category. Please try again.");
+      console.log(error)
+      toast.error(error?.data?.message || 'Failed to add category. Please try again.');
     }
   };
 
@@ -68,7 +68,7 @@ const CategoryAddModal = ({ closeModal }) => {
       <Form.Item
         label={<span className="text-[var(--white-600)]">Category Name</span>}
         name="name"
-        rules={[{ required: true, message: "Please input category name" }]}
+        rules={[{ required: true, message: 'Please input category name' }]}
       >
         <Input className="bg-[var(--black-600)] p-2 w-full outline-none focus:bg-[var(--black-700)] hover:bg-[var(--black-700)] border-none h-11 text-[var(--white-600)]" />
       </Form.Item>
@@ -88,7 +88,7 @@ const CategoryAddModal = ({ closeModal }) => {
         </Upload>
       </Form.Item>
 
-      <div className="center-center mt-10 flex justify-between">
+      <div className="center-center mt-10 flex justify-between gap-4">
         <Button
           onClick={() => {
             closeModal();
@@ -105,7 +105,7 @@ const CategoryAddModal = ({ closeModal }) => {
           htmlType="submit"
           className="bg-[var(--orange-600)] border-none text-[var(--white-600)]"
         >
-          Save
+          {isCreating ? 'Adding...' : 'Add Category'}
         </Button>
       </div>
     </Form>

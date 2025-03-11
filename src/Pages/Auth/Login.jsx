@@ -126,7 +126,7 @@ const Login = () => {
             className="w-full !bg-[#3872F0]"
             style={{ marginTop: 10 }}
           >
-            {isLoading ? <span class="loader"></span> : 'Continue with Email'}
+            {isLoading ? <span className="loader"></span> : 'Continue with Email'}
           </Button>
         </Form>
       </div>

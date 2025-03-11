@@ -1,47 +1,61 @@
-import { Table, Popconfirm, message, Modal, Button } from "antd";
-import React, { useState } from "react";
-import { MdDelete } from "react-icons/md";
-import PageHeading from "../../Components/Shared/PageHeading";
-import { FaPlus } from "react-icons/fa6";
-import CategoryAddModal from "../../Components/modal/CategoryAddModal";
-import CategoryEditModal from "../../Components/modal/CategoryEditModal"; // Import the new modal
-import UsernameImage from "../../Utils/Sideber/UserImage";
-import { FaEdit } from "react-icons/fa";
+import { Table, Popconfirm, message, Modal, Button, Form, Input } from 'antd';
+import React, { useState } from 'react';
+import { MdDelete } from 'react-icons/md';
+import PageHeading from '../../Components/Shared/PageHeading';
+import { FaPlus } from 'react-icons/fa6';
+import CategoryAddModal from '../../Components/modal/CategoryAddModal';
+import CategoryEditModal from '../../Components/modal/CategoryEditModal'; // Import the new modal
+import UsernameImage from '../../Utils/Sideber/UserImage';
+import { FaEdit } from 'react-icons/fa';
+import {
+  useDeleteCategoryMutation,
+  useGetCategoryQuery,
+} from '../../Redux/services/categoriseApis';
+import toast from 'react-hot-toast';
 
 const CategoryManage = () => {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmData, setConfirmData] = useState({});
+  const [recordToDelete, setRecordToDelete] = useState(null); 
+  const { data: categoriesData, isLoading: categoriesLoading } =
+    useGetCategoryQuery();
+  const [deleteCategory] = useDeleteCategoryMutation({});
 
-  // Dummy data
-  const [categories, setCategories] = useState([
-    {
-      sl_no: `# ${1}`,
-      name: "Electronics",
-      image:
-        "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
-      _id: "1",
-    },
-    {
-      sl_no: `# ${2}`,
-      name: "Fashion",
-      image:
-        "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
-      _id: "2",
-    },
-    {
-      sl_no: `# ${3}`,
-      name: "Home Appliances",
-      image:
-        "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
-      _id: "3",
-    },
-  ]);
+  const handleDelete = async (record) => {
+    setRecordToDelete(record);
+    setConfirmModalOpen(true);
+  };
 
-  const handleDelete = (id) => {
-    console.log("Deleted Category ID:", id);
-    message.success("Category deleted successfully.");
-    setCategories(categories.filter((category) => category._id !== id));
+  const handleConfirmDelete = async () => {
+    if (!confirmData?.name || !confirmData?.password) {
+      toast.error('Please fill in both name and password.');
+      return;
+    }
+    const data = {
+      id: recordToDelete?._id,
+      name: confirmData.name,
+      password: confirmData.password,
+    };
+    try {
+      const response = await deleteCategory({ data });
+      if (response?.data?.success) {
+        toast.success('Category deleted successfully.');
+      } else {
+        console.log(response);
+        toast.error(
+          response?.error?.data?.message || 'Failed to delete category.'
+        );
+      }
+    } catch (error) {
+      toast.error('Failed to delete category.');
+    } finally {
+      setConfirmModalOpen(false);
+      setConfirmData({});
+      setRecordToDelete(null);
+    }
   };
 
   const handleEdit = (record) => {
@@ -50,17 +64,17 @@ const CategoryManage = () => {
   };
 
   const columns = [
-    { title: "Sl_no", dataIndex: "sl_no", key: "sl_no" },
-    { title: "Category Name", dataIndex: "name", key: "name" },
+    { title: 'Sl_no', dataIndex: 'sl_no', key: 'sl_no' },
+    { title: 'Category Name', dataIndex: 'name', key: 'name' },
     {
-      title: "Category Image",
-      dataIndex: "image",
-      key: "image",
+      title: 'Category Image',
+      dataIndex: 'image',
+      key: 'image',
       render: (image) => <UsernameImage image={image} />,
     },
     {
-      title: "Actions",
-      key: "actions",
+      title: 'Actions',
+      key: 'actions',
       render: (record) => (
         <div className="flex items-center">
           <Button shape="circle" onClick={() => handleEdit(record)}>
@@ -69,8 +83,15 @@ const CategoryManage = () => {
           <Popconfirm
             placement="topLeft"
             title="Confirm Deletion"
-            description="Are you sure you want to delete this category?"
-            onConfirm={() => handleDelete(record._id)}
+            description={
+              <p className="text-wrap">
+                Are you sure you want to delete this category? <br /> This will
+                also delete all products under this category.
+              </p>
+            }
+            onConfirm={() => {
+              handleDelete(record);
+            }}
             okText="Yes"
             cancelText="No"
           >
@@ -81,6 +102,16 @@ const CategoryManage = () => {
     },
   ];
 
+  // Prepare categories data if it's available
+  const categories = categoriesData
+    ? categoriesData.data.map((category, index) => ({
+        sl_no: `# ${index + 1}`,
+        name: category.name,
+        image: category.img,
+        _id: category._id,
+      }))
+    : [];
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -90,16 +121,21 @@ const CategoryManage = () => {
           <Button
             onClick={() => setCategoryModalOpen(true)}
             style={{
-              maxWidth: "220px",
-              justifyContent: "center",
-              height: "44px",
+              maxWidth: '220px',
+              justifyContent: 'center',
+              height: '44px',
             }}
           >
             Add New Category <FaPlus />
           </Button>
         </div>
       </div>
-      <Table columns={columns} dataSource={categories} rowKey="_id" />
+      <Table
+        loading={categoriesLoading}
+        columns={columns}
+        dataSource={categories}
+        rowKey="_id"
+      />
       <Modal
         className="addcategory"
         open={categoryModalOpen}
@@ -114,6 +150,37 @@ const CategoryManage = () => {
         onCancel={() => setEditModalOpen(false)}
         initialData={selectedCategory}
       />
+      <Modal
+        open={confirmModalOpen}
+        onCancel={() => setConfirmModalOpen(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setConfirmModalOpen(false)}>
+            Cancel
+          </Button>,
+          <Button key="confirm" type="primary" onClick={handleConfirmDelete}>
+            Confirm
+          </Button>,
+        ]}
+      >
+        <Form layout="vertical">
+          <Form.Item label="Name">
+            <Input
+              value={confirmData.name}
+              onChange={(e) =>
+                setConfirmData({ ...confirmData, name: e.target.value })
+              }
+            />
+          </Form.Item>
+          <Form.Item label="Password">
+            <Input.Password
+              value={confirmData.password}
+              onChange={(e) =>
+                setConfirmData({ ...confirmData, password: e.target.value })
+              }
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

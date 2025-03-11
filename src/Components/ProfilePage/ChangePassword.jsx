@@ -9,17 +9,7 @@ const ChangePassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [setNewPassword, { isLoading: isNewPassChange }] =
     usePatchNewPasswordMutation({});
-  const toggleOldPassword = () => {
-    setShowOldPassword(!showOldPassword);
-  };
 
-  const toggleNewPassword = () => {
-    setShowNewPassword(!showNewPassword);
-  };
-
-  const toggleConfirmPassword = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
   const onFinish = async (values) => {
     console.log('Success:', values);
     const ChangePasswordDatas = {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Form,
   Input,
@@ -9,40 +9,40 @@ import {
   message,
   Row,
   Col,
-} from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import PageHeading from "../../Components/Shared/PageHeading";
+} from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import PageHeading from '../../Components/Shared/PageHeading';
 
 const { TextArea } = Input;
 
 const AddProduct = () => {
   const [form] = Form.useForm();
-  const [tab, setTab] = useState("Wholesaler");
-  const [fileList, setFileList] = useState([]);
+  const [tab, setTab] = useState('Wholesaler');
+  const [fileList, setFileList] = useState(null);
 
   const handleFileChange = (info) => {
     setFileList(info.fileList);
   };
 
   const onFinish = (values) => {
-    console.log("Form Values:", values);
-    message.success("Product added successfully!");
+    console.log('Form Values:', values);
+    message.success('Product added successfully!');
     form.resetFields();
     setFileList([]);
   };
 
   return (
     <div className="bg-white min-h-full p-6 rounded-xl">
-      <PageHeading text={"Manage Products"} />
+      <PageHeading text={'Manage Products'} />
       <Form
         requiredMark={false}
         form={form}
         layout="vertical"
         onFinish={onFinish}
         initialValues={{
-          price: "$100",
-          category: "Foods",
-          quantity: "500-600gm",
+          price: '$100',
+          category: 'Foods',
+          quantity: '500-600gm',
         }}
       >
         <Row gutter={[16, 16]}>
@@ -52,7 +52,7 @@ const AddProduct = () => {
               label="Upload Product Image"
               name="productImages"
               rules={[
-                { required: true, message: "Please upload product image" },
+                { required: true, message: 'Please upload product image' },
               ]}
             >
               <Upload
@@ -61,6 +61,7 @@ const AddProduct = () => {
                 onChange={handleFileChange}
                 beforeUpload={() => false}
                 accept="image/*"
+                maxCount={1}
               >
                 <div>
                   <UploadOutlined />
@@ -82,7 +83,7 @@ const AddProduct = () => {
             <Form.Item
               label="Product Name"
               name="productName"
-              rules={[{ required: true, message: "Please enter product name" }]}
+              rules={[{ required: true, message: 'Please enter product name' }]}
             >
               <Input />
             </Form.Item>
@@ -92,7 +93,7 @@ const AddProduct = () => {
               rules={[
                 {
                   required: true,
-                  message: "Please enter a product description",
+                  message: 'Please enter a product description',
                 },
               ]}
             >
@@ -104,7 +105,7 @@ const AddProduct = () => {
                   label="Price"
                   name="price"
                   rules={[
-                    { required: true, message: "Please enter the price" },
+                    { required: true, message: 'Please enter the price' },
                   ]}
                 >
                   <Input />
@@ -115,7 +116,7 @@ const AddProduct = () => {
                 <Form.Item label="Select Category" name="category">
                   <Select
                     rules={[
-                      { required: true, message: "Please select a category" },
+                      { required: true, message: 'Please select a category' },
                     ]}
                   >
                     <Select.Option value="Foods">Foods</Select.Option>
@@ -134,7 +135,7 @@ const AddProduct = () => {
                   label="Quantity"
                   name="quantity"
                   rules={[
-                    { required: true, message: "Please enter the quantity" },
+                    { required: true, message: 'Please enter the quantity' },
                   ]}
                 >
                   <Input />
@@ -144,9 +145,9 @@ const AddProduct = () => {
               <Col xs={24} sm={12} md={12} lg={12}>
                 <Form.Item label="Select Available Color" name="color">
                   <Select
-                  placeholder="Select a color"
+                    placeholder="Select a color"
                     rules={[
-                      { required: true, message: "Please select a color" },
+                      { required: true, message: 'Please select a color' },
                     ]}
                   >
                     <Select.Option value="Red">Red</Select.Option>

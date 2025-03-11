@@ -22,11 +22,11 @@ export const SidebarLink = [
     label: "Manage Category",
     icon: <MdManageSearch size={24} />,
   },
-  {
-    path: "/addcategory-management",
-    label: "Add Sub Category",
-    icon: <TbCategoryPlus size={24} />,
-  },
+  // {
+  //   path: "/addcategory-management",
+  //   label: "Add Sub Category",
+  //   icon: <TbCategoryPlus size={24} />,
+  // },
   {
     path: "/manage-order",
     label: "Manage Order",

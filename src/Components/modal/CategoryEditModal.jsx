@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Button, Upload } from "antd";
-import { FaImage } from "react-icons/fa";
-import { imageUrl } from "../../Utils/server";
+import React, { useState, useEffect } from 'react';
+import { Modal, Form, Input, Button, Upload } from 'antd';
+import { FaImage } from 'react-icons/fa';
+import { imageUrl } from '../../Utils/server';
+import { useUpdateCategoryMutation } from '../../Redux/services/categoriseApis';
+import toast from 'react-hot-toast';
 
 const CategoryEditModal = ({ visible, onCancel, initialData }) => {
+  const [updateCategory] = useUpdateCategoryMutation();
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [file, setFile] = useState(null);
@@ -14,9 +17,9 @@ const CategoryEditModal = ({ visible, onCancel, initialData }) => {
     if (initialData?.image) {
       setFileList([
         {
-          uid: "-1",
-          name: "existing image",
-          status: "done",
+          uid: '-1',
+          name: 'existing image',
+          status: 'done',
           url: imageUrl(initialData.image),
         },
       ]);
@@ -30,19 +33,26 @@ const CategoryEditModal = ({ visible, onCancel, initialData }) => {
     setFile(fileList.length ? fileList[0].originFileObj : null);
   };
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     const formData = new FormData();
-    formData.append("name", values.name);
+    formData.append('name', values.name);
+
     if (file) {
-      formData.append("image", file);
+      formData.append('img', file);
     }
 
-    console.log("FormData Entries:");
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
+    try {
+      const res = await updateCategory({
+        id: initialData._id,
+        data: formData,
+      }).unwrap();
+      if (res?.success) {
+        toast.success(res?.message || 'Category updated successfully.');
+      }
+      onCancel();
+    } catch (error) {
+      console.error('Error updating category:', error);
     }
-
-    handleCancel();
   };
 
   const handleCancel = () => {
@@ -67,7 +77,7 @@ const CategoryEditModal = ({ visible, onCancel, initialData }) => {
         <Form.Item
           label={<span>Category Image</span>}
           rules={[
-            { required: true, message: "Please upload a category image" },
+            { required: false, message: 'Please upload a category image' },
           ]}
         >
           <Upload
@@ -92,7 +102,7 @@ const CategoryEditModal = ({ visible, onCancel, initialData }) => {
           label="Category Name"
           name="name"
           rules={[
-            { required: true, message: "Please input the category name!" },
+            { required: true, message: 'Please input the category name!' },
           ]}
         >
           <Input />

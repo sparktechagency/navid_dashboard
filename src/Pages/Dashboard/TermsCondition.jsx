@@ -1,62 +1,64 @@
-import React, { useState } from "react";
-import { Button, notification } from "antd";
-import PageHeading from "../../Components/Shared/PageHeading.jsx";
-import JoditComponent from "../../Components/Shared/JoditComponent.jsx";
-// import {
-//   useGetConditionsQuery,
-//   usePostConditionsMutation,
-// } from "../../Redux/api/termsConditionsApis";
+import React, { useEffect, useState } from 'react';
+import { Button, notification, Spin } from 'antd';
+import PageHeading from '../../Components/Shared/PageHeading.jsx';
+import JoditComponent from '../../Components/Shared/JoditComponent.jsx';
+import {
+  useGetPolicyQuery,
+  useUpdateSettingMutation,
+} from '../../Redux/services/policyApis.js';
 
 const TermsCondition = () => {
-  const [content, setContent] = useState("");
-  //   const { data, isLoading } = useGetConditionsQuery({});
-  //   const [setDescription, { isLoading: isSubmitting }] =
-  //     usePostConditionsMutation();
+  const [content, setContent] = useState('');
+  const { data, isLoading } = useGetPolicyQuery({ type: 'terms' });
+  const [updateSetting, { isLoading: isSubmitting }] =
+    useUpdateSettingMutation();
 
-  //   useEffect(() => {
-  //     if (data?.data?.description) {
-  //       setContent(data.data.description);
-  //     }
-  //   }, [data]);
+  useEffect(() => {
+    if (data?.data?.desc) {
+      setContent(data?.data?.desc);
+    }
+  }, [data]);
 
-  const handleLogContent = async () => {
+  const handleSubmit = async () => {
     try {
-      //   await setDescription({ description: content }).unwrap();
+      const requestData = {
+        name: 'terms',
+        desc: content,
+      };
+
+      await updateSetting({ data: requestData }).unwrap();
+
       notification.success({
-        message: "Success",
-        description: "Terms & Conditions updated successfully!",
+        message: 'Success',
+        description: 'Privacy Policy updated successfully!',
       });
     } catch (error) {
       notification.error({
-        message: "Error",
-        description: "Failed to update Terms & Conditions. Please try again.",
+        message: 'Error',
+        description: 'Failed to update Privacy Policy. Please try again.',
       });
     }
   };
 
-  //   if (isLoading) {
-  //     return <p>..loading</p>;
-  //   }
+  if (isLoading) {
+    return <span className="loader-black"></span>;
+  }
 
   return (
     <>
-      {/* heading and back button */}
-      <PageHeading text="Terms & Condition" />
-      <JoditComponent setContent={setContent} content={content} />
-
-      {/* Button to log content */}
+      <PageHeading text="Privacy Policy" />
+      <JoditComponent setContent={setContent} content={content || ''} />
       <Button
-        onClick={handleLogContent}
-        // disabled={isSubmitting}
+        onClick={handleSubmit}
+        disabled={isSubmitting}
         style={{
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "10px",
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: '10px',
         }}
-        className="max-w-48 sidebar-button-black"
+        className="w-48 sidebar-button-black"
       >
-        {/* {isSubmitting ? "Submitting..." : "Submit"} */}
-        Submit
+        {isSubmitting ? <Spin size="small" /> : 'Submit'}
       </Button>
     </>
   );

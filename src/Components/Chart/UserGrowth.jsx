@@ -18,14 +18,13 @@ const UserGrowth = () => {
     year_user: year,
   });
 
-
   const chartData = userData?.userGrowth?.data;
 
   const data = {
     labels: userData?.userGrowth?.monthNames,
     datasets: [
       {
-        label: 'Monthly Data',
+        label: 'Monthly Users',
         data: chartData,
         backgroundColor: '#007bff',
         borderRadius: 5,
@@ -64,7 +63,7 @@ const UserGrowth = () => {
     console.log(`Selected Year: ${value}`);
   };
 
- const yearOptions = userData?.users_year.map((yr, i) => {
+  const yearOptions = userData?.users_year.map((yr, i) => {
     return (
       <Select.Option key={2024 + i} value={yr}>
         {yr}
