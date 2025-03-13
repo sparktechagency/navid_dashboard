@@ -6,7 +6,6 @@ import logo from '../../assets/logo.svg';
 import toast from 'react-hot-toast';
 import { useGetProfileDataQuery } from '../../Redux/services/profileApis';
 import { imageUrl } from '../../Utils/server';
-import { IoIosNotifications } from 'react-icons/io';
 function Header() {
   const route = useNavigate();
   const { data: profileData, isLoading: profileLoading } =
@@ -16,6 +15,8 @@ function Header() {
     displayName: profileData?.data?.name,
     email: profileData?.data?.email,
   };
+
+ 
 
   const handleSignOut = () => {
     localStorage.removeItem('token');
@@ -50,12 +51,7 @@ function Header() {
       {profileLoading ? (
         ''
       ) : (
-        <div className="flex items-center gap-4 text-2xl">
-          <Button
-          shape='circle'
-          >
-            <IoIosNotifications />
-          </Button>
+        <div className="flex items-center  gap-4 text-2xl">
           <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
             <Avatar
               size={40}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { FaEdit } from 'react-icons/fa';
 import ProfileEdit from '../../Components/ProfilePage/ProfileEdit.jsx';
@@ -13,10 +13,10 @@ const Profile = () => {
   const [tab, setTab] = useState(Tabs[0]);
   const { data: profileData, isLoading } = useGetProfileDataQuery({});
   const [image, setImage] = useState(null);
-
   const handleImageUpload = (e) => {
     if (e.target.files?.[0]) {
       setImage(e.target.files[0]);
+      localStorage.setItem('image', e.target.files[0]);
     }
   };
 
@@ -26,10 +26,8 @@ const Profile = () => {
     ? imageUrl(profileData.data.img)
     : 'https://placehold.co/400';
 
-  // TODO PROFILE IMAGE UPDATE PROBLEM
   return (
     <>
-      {/* Profile Image Section */}
       <div className="max-w-[700px] mx-auto  p-4 rounded-md">
         <div className="w-full center-center">
           <div
@@ -86,7 +84,6 @@ const Profile = () => {
         ))}
       </div>
 
-      {/* Content Section (ProfileEdit or ChangePassword) */}
       <div className="max-w-[700px] mx-auto bg-[var(--black-200)] p-4 rounded-md">
         {tab === 'Edit Profile' ? (
           isLoading ? (

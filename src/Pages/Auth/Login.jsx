@@ -25,7 +25,7 @@ const Login = () => {
           console.log(decoded.role);
           if (decoded.role === 'ADMIN') {
             toast.success('Login successful');
-            route('/');
+            window.location.href = '/';
           } else {
             localStorage.removeItem('token');
             window.location.href = '/login';
@@ -126,7 +126,11 @@ const Login = () => {
             className="w-full !bg-[#3872F0]"
             style={{ marginTop: 10 }}
           >
-            {isLoading ? <span className="loader"></span> : 'Continue with Email'}
+            {isLoading ? (
+              <span className="loader"></span>
+            ) : (
+              'Continue with Email'
+            )}
           </Button>
         </Form>
       </div>

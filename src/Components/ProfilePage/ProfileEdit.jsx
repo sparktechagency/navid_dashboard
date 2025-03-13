@@ -1,9 +1,10 @@
 import React from 'react';
 import { Button, Form, message, Spin } from 'antd';
 import { useUpdateProfileDataMutation } from '../../Redux/services/profileApis';
+import toast from 'react-hot-toast';
 
-const ProfileEdit = ({ image, defaultImage, data }) => {
-  console.log(defaultImage)
+const ProfileEdit = ({ image, data }) => {
+  console.log(image);
   const [form] = Form.useForm();
   const [setProfileUpdate, { isLoading: isProfileUpdate }] =
     useUpdateProfileDataMutation();
@@ -12,19 +13,24 @@ const ProfileEdit = ({ image, defaultImage, data }) => {
       name: values?.name,
       phone: values?.phoneNumber,
     };
-
+    console.log(updateData);
     const formData = new FormData();
     Object.keys(updateData).forEach((key) => {
       formData.append(key, updateData[key]);
     });
 
-    if (image !== null) {
+    if (image === null) {
+      toast.error('asdasdad');
+      return;
+    } else {
       formData.append('img', image);
     }
 
     try {
-      await setProfileUpdate(formData);
-      message.success('Profile updated successfully!');
+      const res = await setProfileUpdate(formData);
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'Profile updated successfully');
+      }
     } catch (error) {
       console.error('Failed to update profile:', error);
     }

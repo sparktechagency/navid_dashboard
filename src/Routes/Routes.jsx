@@ -21,7 +21,7 @@ import ProductEditing from '../Pages/Dashboard/ProductEditing.jsx';
 
 export const Routes = createBrowserRouter([
   {
-    path: '/',
+    path: '/',  
     element: (
       <PrivateRoute>
         <Dashboard />
