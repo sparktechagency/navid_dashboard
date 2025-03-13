@@ -14,7 +14,7 @@ const UserManageTable = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const { data: userData, isLoading } = useGetAllUserQuery();
   const [blockUser] = useBlockUserMutation();
-  console.log(userData);
+  userData?.data?.map((payment, index) => console.log(payment.block));
   const paymentDataInformation =
     userData?.data?.map((payment, index) => ({
       key: payment._id,
@@ -27,13 +27,14 @@ const UserManageTable = () => {
           'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg',
         phoneNumber: payment?.phone || 'N/A',
         location: payment?.location || 'N/A',
+        isBlock: payment.block,
       },
     })) || [];
 
   const handleBlock = async (id) => {
     try {
       const res = await blockUser({ id });
-      console.log('asdjakjsdhjasgdjhasd', res);
+
       if (res?.data?.success) {
         toast.success(res?.data?.message || 'User blocked successfully');
       } else {
@@ -92,6 +93,7 @@ const UserManageTable = () => {
           >
             <IoEyeSharp />
           </Button>
+
           <Popconfirm
             placement="topLeft"
             title="Confirm Deletion"
@@ -100,7 +102,13 @@ const UserManageTable = () => {
             okText="Yes"
             cancelText="No"
           >
-            <Button type="default" shape="circle">
+            <Button
+              className={`${
+                record?.user?.isBlock ? '!bg-red-500' : '!bg-green-500'
+              }  `}
+              type="default"
+              shape="circle"
+            >
               <MdBlock />
             </Button>
           </Popconfirm>

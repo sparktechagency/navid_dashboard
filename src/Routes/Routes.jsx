@@ -17,6 +17,7 @@ import AddProduct from '../Pages/Dashboard/AddProduct.jsx';
 import AllUser from '../Pages/Dashboard/AllUser.jsx';
 import ManageProducts from '../Pages/Dashboard/ManageOrders.jsx';
 import PrivateRoute from './PrivetRoute.jsx';
+import ProductEditing from '../Pages/Dashboard/ProductEditing.jsx';
 
 export const Routes = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ export const Routes = createBrowserRouter([
       {
         path: '/add-product',
         element: <AddProduct />,
+      },
+      {
+        path: '/add-product/:id',
+        element: <ProductEditing />,
       },
       {
         path: '/manage-order',

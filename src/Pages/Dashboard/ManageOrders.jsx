@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Input, Popconfirm, Radio, Table } from 'antd';
 import { FaEdit } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
 import { FaPlus } from 'react-icons/fa6';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import PageHeading from '../../Components/Shared/PageHeading';
-import { useGetProductQuery } from '../../Redux/services/ProductApis';
+import {
+  useDeleteProductsMutation,
+  useGetProductQuery,
+} from '../../Redux/services/ProductApis';
 import { imageUrl } from '../../Utils/server';
 
 const TABS = [
@@ -19,19 +22,29 @@ const ManageOrder = () => {
   const [searchKey, setSearchKey] = useState('');
 
   const isWholeSale = TABS.find((tab) => tab.key === currentTab)?.value;
-
+  const navigate = useNavigate();
   const { data: products, isLoading: productsLoading } = useGetProductQuery({
     whole_sale: isWholeSale,
     search: searchKey,
   });
 
+  const [deleteProducts] = useDeleteProductsMutation();
+  
   const transformedData =
     products?.data?.map((product) => ({
-      id: product._id,
-      productName: product.name,
-      category: product.description,
-      price: `$ ${product.price}`,
-      image: product.variantImages[product.variantColors[0]]?.[0] || '',
+      id: product?._id,
+      productName: product?.name,
+      description: product?.description,
+      price: new Intl.NumberFormat('en-US', {
+        currency: 'USD',
+      }).format(product?.price),
+      whole_sale: product?.whole_sale,
+      quantity: product?.quantity,
+      categoryId: product?.category?._id,
+      category: product?.category?.name,
+      variantImages: product?.variantImages || {},
+      image: product?.variantImages[product?.variantColors[0]]?.[0] || '',
+      video: product?.video,
     })) || [];
 
   const filteredData = transformedData.filter((item) =>
@@ -45,9 +58,13 @@ const ManageOrder = () => {
     setPage(1);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     console.log('Deleting product with id:', id);
+    const res = await deleteProducts({ id });
+    console.log(res);
   };
+  // TODO : handle DELETE CHECK AND MAKE NICE NOTICFICATION
+  //TODO : AND ALSO MAKE NICE NOTIFICATION IN THE NEW PRODUCT ADD
 
   const columns = [
     {
@@ -81,7 +98,7 @@ const ManageOrder = () => {
       key: 'category',
     },
     {
-      title: 'Price',
+      title: 'Price ($)',
       dataIndex: 'price',
       key: 'price',
     },
@@ -90,7 +107,13 @@ const ManageOrder = () => {
       key: 'action',
       render: (_, record) => (
         <div className="flex items-center">
-          <Button shape="circle">
+          <Button
+            onClick={() => {
+              navigate(`/add-product/${record.id}`, { state: record });
+              console.log(record);
+            }}
+            shape="circle"
+          >
             <FaEdit className="text-blue-500 cursor-pointer mr-2" />
           </Button>
 

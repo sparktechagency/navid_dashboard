@@ -31,7 +31,7 @@ const ManageProducts = () => {
       toast.error('Failed to update status');
     }
   };
-
+console.log(orderData)
   const orders = orderData?.data || [];
 
   const columns = [
