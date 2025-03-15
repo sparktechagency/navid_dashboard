@@ -14,7 +14,6 @@ const UserManageTable = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const { data: userData, isLoading } = useGetAllUserQuery();
   const [blockUser] = useBlockUserMutation();
-  userData?.data?.map((payment, index) => console.log(payment.block));
   const paymentDataInformation =
     userData?.data?.map((payment, index) => ({
       key: payment._id,

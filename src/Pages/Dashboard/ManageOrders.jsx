@@ -10,6 +10,7 @@ import {
   useGetProductQuery,
 } from '../../Redux/services/ProductApis';
 import { imageUrl } from '../../Utils/server';
+import toast from 'react-hot-toast';
 
 const TABS = [
   { key: 'whole_sale', label: 'Whole Sale', value: true },
@@ -29,7 +30,7 @@ const ManageOrder = () => {
   });
 
   const [deleteProducts] = useDeleteProductsMutation();
-  
+
   const transformedData =
     products?.data?.map((product) => ({
       id: product?._id,
@@ -59,12 +60,16 @@ const ManageOrder = () => {
   };
 
   const handleDelete = async (id) => {
-    console.log('Deleting product with id:', id);
-    const res = await deleteProducts({ id });
-    console.log(res);
+    try {
+      const res = await deleteProducts({ id });
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'Product deleted successfully.');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.data?.message || 'Product deleted failed.');
+    }
   };
-  // TODO : handle DELETE CHECK AND MAKE NICE NOTICFICATION
-  //TODO : AND ALSO MAKE NICE NOTIFICATION IN THE NEW PRODUCT ADD
 
   const columns = [
     {

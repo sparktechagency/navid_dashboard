@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Form, message, Spin } from 'antd';
 import { useUpdateProfileDataMutation } from '../../Redux/services/profileApis';
 import toast from 'react-hot-toast';
 
-const ProfileEdit = ({ image, data }) => {
-  console.log(image);
+const ProfileEdit = ({ image, defaultImage, data }) => {
   const [form] = Form.useForm();
   const [setProfileUpdate, { isLoading: isProfileUpdate }] =
     useUpdateProfileDataMutation();
@@ -20,9 +19,8 @@ const ProfileEdit = ({ image, data }) => {
     });
 
     if (image === null) {
-      toast.error('asdasdad');
-      return;
-    } else {
+      formData.delete('img', image);
+    }else{
       formData.append('img', image);
     }
 

@@ -24,12 +24,10 @@ ChartJS.register(
 const SubscriptionGrowth = () => {
   const canvasRef = useRef(null);
   const [year, setYear] = useState(new Date().getFullYear());
-  console.log(year);
   const { data: userGrowth, isLoading } = useGetOverViewQuery({
     year_payment: year,
   });
   const yearOptions = userGrowth?.payment_year.map((yr, i) => {
-    console.log(yr);
     return (
       <Select.Option key={2024 + i} value={yr}>
         {yr}

@@ -11,7 +11,6 @@ const ChangePassword = () => {
     usePatchNewPasswordMutation({});
 
   const onFinish = async (values) => {
-    console.log('Success:', values);
     const ChangePasswordDatas = {
       oldPassword: values.oldPassword,
       newPassword: values.newPassword,

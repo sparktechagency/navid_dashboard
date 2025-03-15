@@ -35,7 +35,6 @@ const CategoryAddModal = ({ closeModal }) => {
 
     try {
       const response = await createNewCategory(formData).unwrap();
-      console.log(response);
       if (response?.success) {
         toast.success(response?.message || 'Category added successfully.');
         form.resetFields();

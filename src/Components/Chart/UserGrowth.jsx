@@ -60,7 +60,6 @@ const UserGrowth = () => {
 
   const handleYearChange = (value) => {
     setYear(value);
-    console.log(`Selected Year: ${value}`);
   };
 
   const yearOptions = userData?.users_year.map((yr, i) => {

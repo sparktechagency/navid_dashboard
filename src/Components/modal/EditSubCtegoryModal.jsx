@@ -12,7 +12,6 @@ const EditSubCtegoryModal = ({ subCategory, closeModal }) => {
   };
 
   const handleSubmit = (values) => {
-    console.log("Form Values: ", values);
     const data = {
       name: values?.categoryName,
       image: values.subCategoryImage?.file,

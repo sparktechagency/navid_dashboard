@@ -61,12 +61,11 @@ const ProductEditing = () => {
     }
   }, [productData, navigate]);
   const [categoryId, setCategoryId] = useState(productData?.categoryId);
-  console.log('asdhjaksd asdjhasd aksjhdjas ashd as n', productData.whole_sale);
   useEffect(() => {
     if (productData) {
       form.setFieldsValue({
         name: productData?.productName ?? '',
-        price: productData.price ?? 0,
+        price: parseFloat((productData.price ?? '0').replace(/,/g, '')),
         quantity: productData.quantity ?? 1,
         category: productData?.category ?? '',
         description: productData.description ?? '',
@@ -206,7 +205,6 @@ const ProductEditing = () => {
   };
 
   const removeVideo = () => {
-    // setRemoveVideoPath(productData.video)
     setVideoFile(null);
     setVideoPreview(null);
     setProductVideo(null);
@@ -363,7 +361,7 @@ const ProductEditing = () => {
         <Row gutter={[16, 16]}>
           {/* Product Video and Images Section */}
           <Col xs={24} sm={12} md={12} lg={8}>
-            <div className="border rounded-lg p-4 bg-gray-50">
+            <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
               <h3 className="text-lg font-medium mb-4">Product Media</h3>
 
               {/* Video Section */}
@@ -389,12 +387,12 @@ const ProductEditing = () => {
                           showPreview('video', videoPreview, 'Product Video')
                         }
                       />
-                      <Button
+                      {/* <Button
                         icon={<DeleteOutlined />}
                         danger
                         className="rounded-full"
                         onClick={removeVideo}
-                      />
+                      /> */}
                     </div>
                   </div>
                 ) : (
@@ -511,7 +509,7 @@ const ProductEditing = () => {
 
           {/* Product Details Section */}
           <Col xs={24} sm={12} md={12} lg={16}>
-            <div className="border rounded-lg p-4 bg-gray-50">
+            <div className="border !border-gray-100 rounded-lg p-4 bg-gray-50">
               <h3 className="text-lg font-medium mb-4">Product Details</h3>
 
               {/* Product Type Selection */}
@@ -553,8 +551,6 @@ const ProductEditing = () => {
                     <InputNumber
                       placeholder="Enter price"
                       min={0}
-                      precision={2}
-                      addonBefore="$"
                       style={{ width: '100%' }}
                     />
                   </Form.Item>
@@ -606,7 +602,7 @@ const ProductEditing = () => {
               </Form.Item>
 
               {/* Action Buttons */}
-              <div className="flex justify-between space-x-4 mt-4">
+              <div className="flex justify-between gap-4 mt-4">
                 <Button
                   type="default"
                   className="w-full"
