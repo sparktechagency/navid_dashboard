@@ -10,7 +10,6 @@ import {
   Tooltip,
   Select,
   InputNumber,
-  Image,
 } from 'antd';
 import {
   VideoCameraOutlined,
@@ -91,19 +90,25 @@ const AddProduct = () => {
   };
 
   const colorOptions = [
-    { value: 'red', color: 'bg-red-500', label: 'Red' },
-    { value: 'blue', color: 'bg-blue-500', label: 'Blue' },
-    { value: 'green', color: 'bg-green-500', label: 'Green' },
-    { value: 'yellow', color: 'bg-yellow-500', label: 'Yellow' },
-    { value: 'purple', color: 'bg-purple-500', label: 'Purple' },
-    { value: 'orange', color: 'bg-orange-500', label: 'Orange' },
-    { value: 'black', color: 'bg-black', label: 'Black' },
+    { value: 'red', color: '#ff0000', label: 'Red' },
+    { value: 'blue', color: '#0000ff', label: 'Blue' },
+    { value: 'yellow', color: '#ffff00', label: 'Yellow' },
+    { value: 'purple', color: '#800080', label: 'Purple' },
+    { value: 'orange', color: '#ffa500', label: 'Orange' },
+    { value: 'black', color: '#000000', label: 'Black' },
     {
       value: 'white',
-      color: 'bg-white border border-gray-300',
+      color: '#ffffff',
       label: 'White',
     },
-    { value: 'pink', color: 'bg-pink-500', label: 'Pink' },
+    { value: 'pink', color: '#ffc0cb', label: 'Pink' },
+    { value: 'indigo', color: '#4b0082', label: 'Indigo' },
+    { value: 'lightblue', color: '#add8e6', label: 'Light Blue' },
+    { value: 'brown', color: '#a52a2a', label: 'Brown' },
+    { value: 'gray', color: '#808080', label: 'Gray' },
+    { value: 'silver', color: '#c0c0c0', label: 'Silver' },
+    { value: 'gold', color: '#ffd700', label: 'Gold' },
+    { value: 'darkgreen', color: '#006400', label: 'Dark Green' },
   ];
 
   const onFinish = async (values) => {
@@ -198,7 +203,7 @@ const AddProduct = () => {
                 Upload Images by Color
               </label>
               <p className="text-sm text-gray-500 mb-3">
-                Select colors for product variants (optional)
+                Select colors for product variants
               </p>
 
               <div className="grid grid-cols-3 gap-2">
@@ -213,7 +218,8 @@ const AddProduct = () => {
                     >
                       <div className="text-center">
                         <div
-                          className={`w-full h-8 ${item.color} rounded mb-1`}
+                          style={{ backgroundColor: item.color }}
+                          className={`w-full h-8  rounded mb-1`}
                         ></div>
                         <Form.Item name={fieldName} noStyle>
                           <Upload

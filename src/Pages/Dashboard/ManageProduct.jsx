@@ -1,114 +1,196 @@
 import React, { useState } from 'react';
-import { Table, Input, Select, message } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Popconfirm, Radio, Table } from 'antd';
+import { FaEdit } from 'react-icons/fa';
+import { MdDelete } from 'react-icons/md';
+import { FaPlus } from 'react-icons/fa6';
+import { Link, useNavigate } from 'react-router';
 import PageHeading from '../../Components/Shared/PageHeading';
 import {
-  useGetAllOrderQuery,
-  useUpdateOrderStatusMutation,
-} from '../../Redux/services/orderApis';
+  useDeleteProductsMutation,
+  useGetProductQuery,
+} from '../../Redux/services/ProductApis';
+import { imageUrl } from '../../Utils/server';
 import toast from 'react-hot-toast';
 
-const ManageProducts = () => {
-  const [searchText, setSearchText] = useState('');
-  const {
-    data: orderData,
-    isLoading: dataLoading,
-    refetch,
-  } = useGetAllOrderQuery({
-    search: searchText,
-  });
-  const [updateStatus] = useUpdateOrderStatusMutation();
+const TABS = [
+  { key: 'whole_sale', label: 'Whole Sale', value: true },
+  { key: 'only_user', label: 'Only User', value: false },
+];
 
-  const updateStatusHandle = async (id, value) => {
+const ManageProducts = () => {
+  const [page, setPage] = useState(1);
+  const [currentTab, setCurrentTab] = useState(TABS[0].key);
+  const [searchKey, setSearchKey] = useState('');
+
+  const isWholeSale = TABS.find((tab) => tab.key === currentTab)?.value;
+  const navigate = useNavigate();
+  const { data: products, isLoading: productsLoading } = useGetProductQuery({
+    whole_sale: isWholeSale,
+    search: searchKey,
+  });
+
+  const [deleteProducts] = useDeleteProductsMutation();
+
+  const transformedData =
+    products?.data?.map((product) => ({
+      id: product?._id,
+      productName: product?.name,
+      description: product?.description,
+      price: new Intl.NumberFormat('en-US').format(product?.price),
+      whole_sale: product?.whole_sale,
+      quantity: product?.quantity,
+      categoryId: product?.category?._id,
+      category: product?.category?.name,
+      variantImages: product?.variantImages || [],
+      image: product?.banner || [],
+      video: product?.variantImages?.video || [],
+    })) || [];
+
+  const filteredData = transformedData.filter((item) =>
+    searchKey
+      ? item.productName.toLowerCase().includes(searchKey.toLowerCase())
+      : true
+  );
+
+  const handleTabChange = (tab) => {
+    setCurrentTab(tab);
+    setPage(1);
+  };
+
+  const handleDelete = async (id) => {
     try {
-      const data = {
-        delivery_status: value,
-      };
-      const res = await updateStatus({ id, data }).unwrap();
-      toast.success('Status updated successfully');
-      refetch();
+      const res = await deleteProducts({ id });
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'Product deleted successfully.');
+      }
     } catch (error) {
-      toast.error('Failed to update status');
+      console.error(error);
+      toast.error(error?.data?.message || 'Product deletion failed.');
     }
   };
-console.log(orderData)
-  const orders = orderData?.data || [];
 
   const columns = [
     {
-      title: 'Order No',
-      dataIndex: '_id',
-      key: '_id',
-      render: (id) => `#${id.substring(0, 5)}`,
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
     },
     {
-      title: 'User Email',
-      dataIndex: 'user',
-      key: 'user',
-      render: (user) => user.email,
+      title: 'Product Name',
+      dataIndex: 'productName',
+      key: 'productName',
+      render: (text, record) => (
+        <div className="flex items-center">
+          <img
+            src={imageUrl(record?.image[0])}
+            alt={record.productName}
+            style={{
+              width: '50px',
+              height: '50px',
+              borderRadius: '5px',
+              objectFit: 'cover',
+            }}
+          />
+          <span className="ml-2">{text}</span>
+        </div>
+      ),
     },
     {
-      title: 'Total Items',
-      dataIndex: 'items',
-      key: 'items',
-      render: (items) =>
-        items.reduce((total, item) => total + item.quantity, 0),
+      title: 'Category',
+      dataIndex: 'category',
+      key: 'category',
     },
     {
-      title: 'Price',
-      dataIndex: 'total_amount',
-      key: 'total_amount',
-      render: (price) => `$ ${price.toFixed(2)}`,
+      title: 'Price ($)',
+      dataIndex: 'price',
+      key: 'price',
     },
     {
-      title: 'Delivery Time',
-      dataIndex: 'estimated_delivery_date',
-      key: 'estimated_delivery_date',
-      render: (date) => new Date(date).toLocaleDateString(),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'delivery_status',
-      key: 'delivery_status',
-      render: (status, record) => (
-        <Select
-          defaultValue={status}
-          style={{ width: 120 }}
-          onChange={(value) => updateStatusHandle(record._id, value)}
-        >
-          <Select.Option value="pending">Pending</Select.Option>
-          <Select.Option value="shipped">Shipped</Select.Option>
-          <Select.Option value="packing">Packing</Select.Option>
-          <Select.Option value="processing">Processing</Select.Option>
-          <Select.Option value="shipping">Shipping</Select.Option>
-        </Select>
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => (
+        <div className="flex items-center">
+          <Button
+            onClick={() => {
+              navigate(`/edit-product/${record.id}`, { state: record.id });
+            }}
+            shape="circle"
+          >
+            <FaEdit className="text-blue-500 cursor-pointer mr-2" />
+          </Button>
+
+          <Popconfirm
+            placement="topLeft"
+            title="Confirm Deletion"
+            description="Are you sure you want to delete this product?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <MdDelete className="cursor-pointer text-red-500 text-2xl" />
+          </Popconfirm>
+        </div>
       ),
     },
   ];
 
   return (
-    <div className="p-6">
-      <div className="mb-4 flex justify-between items-center">
-        <PageHeading text={'Manage Order'} />
-        <div className="flex gap-4">
-          {/* Search Bar */}
-          <Input
-            placeholder="Search by User Email"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            suffix={<SearchOutlined />}
-            style={{ width: 200 }}
-          />
-        </div>
+    <>
+      <div className="between-center gap-2 mb-4">
+        <PageHeading text="Manage Products" />
       </div>
-      <Table
-        loading={dataLoading}
-        dataSource={orders}
-        columns={columns}
-        rowKey="_id"
-        pagination={{ pageSize: 5 }}
-      />
-    </div>
+      <div className="end-center gap-2">
+        <Form layout="inline" className="!w-[300px]">
+          <Form.Item className="!w-full">
+            <Input
+              className="!h-11 !w-full"
+              placeholder="Search Products"
+              onChange={(e) => setSearchKey(e.target.value)}
+              value={searchKey}
+            />
+          </Form.Item>
+        </Form>
+        <Link to={'/add-product'}>
+          <Button
+            style={{
+              maxWidth: '220px',
+              justifyContent: 'center',
+              height: '44px',
+            }}
+          >
+            Add New Product <FaPlus />
+          </Button>
+        </Link>
+      </div>
+      <div className="p-2 rounded">
+        <div className="start-center mb-3">
+          {TABS.map((tab) => (
+            <Radio
+              onChange={() => handleTabChange(tab.key)}
+              className="text-[var(--white-600)]"
+              checked={tab.key === currentTab}
+              value={tab.key}
+              key={tab.key}
+            >
+              {tab.label}
+            </Radio>
+          ))}
+        </div>
+        <Table
+          dataSource={filteredData}
+          columns={columns}
+          pagination={{
+            pageSize: 10,
+            current: page,
+            total: filteredData.length,
+            showSizeChanger: false,
+            onChange: (page) => setPage(page),
+          }}
+          loading={productsLoading}
+          rowKey="id"
+        />
+      </div>
+    </>
   );
 };
 

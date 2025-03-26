@@ -5,10 +5,15 @@ import { useGetCategoryQuery } from '../../Redux/services/categoriseApis';
 function SelectCategory({ category, setCategoryId }) {
   const { data: categoryData, isLoading: categoryLoading } =
     useGetCategoryQuery();
-
+  console.log(categoryData);
   const handleCategoryChange = (value) => {
     setCategoryId(value);
   };
+
+  const options = categoryData?.data?.map((category) => ({
+    value: category._id,
+    label: category.name,
+  }));
 
   return (
     <div>
@@ -19,18 +24,10 @@ function SelectCategory({ category, setCategoryId }) {
       >
         <Select
           placeholder="Select a category"
-          allowClear
           loading={categoryLoading}
-          defaultActiveFirstOption={false}
           onChange={handleCategoryChange}
-        >
-          {categoryData?.data &&
-            categoryData.data.map((category) => (
-              <Select.Option key={category._id} value={category._id}>
-                {category.name}
-              </Select.Option>
-            ))}
-        </Select>
+          options={options}
+        ></Select>
       </Form.Item>
     </div>
   );

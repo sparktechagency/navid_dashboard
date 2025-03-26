@@ -6,6 +6,7 @@ import {
   useGetPolicyQuery,
   useUpdateSettingMutation,
 } from '../../Redux/services/policyApis.js';
+import toast from 'react-hot-toast';
 
 const PrivacyPolicy = () => {
   const [content, setContent] = useState('');
@@ -26,17 +27,13 @@ const PrivacyPolicy = () => {
         desc: content,
       };
 
-      await updateSetting({ data: requestData }).unwrap();
-
-      notification.success({
-        message: 'Success',
-        description: 'Privacy Policy updated successfully!',
-      });
+      const res = await updateSetting({ data: requestData }).unwrap();
+      console.log(res);
+      toast.success(res?.message || 'Privacy Policy updated successfully!');
     } catch (error) {
-      notification.error({
-        message: 'Error',
-        description: 'Failed to update Privacy Policy. Please try again.',
-      });
+      toast.error(
+        error?.message || 'Failed to update Privacy Policy. Please try again.'
+      );
     }
   };
 

@@ -6,6 +6,7 @@ import {
   useGetPolicyQuery,
   useUpdateSettingMutation,
 } from '../../Redux/services/policyApis.js';
+import toast from 'react-hot-toast';
 
 const TermsCondition = () => {
   const [content, setContent] = useState('');
@@ -26,17 +27,14 @@ const TermsCondition = () => {
         desc: content,
       };
 
-      await updateSetting({ data: requestData }).unwrap();
+      const res = await updateSetting({ data: requestData }).unwrap();
 
-      notification.success({
-        message: 'Success',
-        description: 'Privacy Policy updated successfully!',
-      });
+      toast.success(res.message || 'Terms & Conditions updated successfully!');
     } catch (error) {
-      notification.error({
-        message: 'Error',
-        description: 'Failed to update Privacy Policy. Please try again.',
-      });
+      toast.error(
+        error?.message ||
+          'Failed to update Terms & Conditions. Please try again.'
+      );
     }
   };
 
@@ -46,7 +44,7 @@ const TermsCondition = () => {
 
   return (
     <>
-      <PageHeading text="Privacy Policy" />
+      <PageHeading text="Terms & Conditions" />
       <JoditComponent setContent={setContent} content={content || ''} />
       <Button
         onClick={handleSubmit}

@@ -6,11 +6,15 @@ import NewSubscrider from '../../Components/Shared/NewSubscrider';
 import { useGetOverViewQuery } from '../../Redux/services/overViewApis';
 function DashboardHome() {
   const { data, isLoading } = useGetOverViewQuery({});
+
   const overViewDataArray = [
-    { title: 'Total User', value: data?.user },
-    { title: 'Total Category', value: data?.total_category },
-    { title: 'Total Product', value: data?.total_product },
-    { title: 'Total Earning', value: data?.total_earning },
+    { title: 'Total User', value: data?.user || 0 },
+    { title: 'Total Category', value: data?.total_category || 0 },
+    {
+      title: 'Total Product',
+      value: data?.whole_sale_product + data?.normal_product || 0,
+    },
+    { title: 'Total Earning', value: data?.total_earning || 0 },
   ];
   return (
     <div>
@@ -23,7 +27,7 @@ function DashboardHome() {
         <SubscriptionGrowth />
         <UserGrowth />
       </div>
-      <NewSubscrider />
+      {/* <NewSubscrider /> */}
     </div>
   );
 }

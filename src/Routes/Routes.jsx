@@ -12,12 +12,12 @@ import PrivacyPolicy from '../Pages/Dashboard/PrivacyPolicy';
 import Profile from '../Pages/Dashboard/Profile.jsx';
 import CategoryManage from '../Pages/Dashboard/CategoryManage.jsx';
 // import SubcategoryManagement from '../Pages/Dashboard/SubcategoryManagement.jsx';
-import ManageOrder from '../Pages/Dashboard/ManageProduct.jsx';
+import ManageOrder from '../Pages/Dashboard/ManageOrders.jsx';
 import AddProduct from '../Pages/Dashboard/AddProduct.jsx';
 import AllUser from '../Pages/Dashboard/AllUser.jsx';
-import ManageProducts from '../Pages/Dashboard/ManageOrders.jsx';
 import PrivateRoute from './PrivetRoute.jsx';
 import ProductEditing from '../Pages/Dashboard/ProductEditing.jsx';
+import ManageProducts from '../Pages/Dashboard/ManageProduct.jsx';
 
 export const Routes = createBrowserRouter([
   {
@@ -45,7 +45,7 @@ export const Routes = createBrowserRouter([
         element: <AddProduct />,
       },
       {
-        path: '/add-product/:id',
+        path: '/edit-product/:id',
         element: <ProductEditing />,
       },
       {

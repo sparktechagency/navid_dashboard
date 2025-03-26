@@ -27,7 +27,7 @@ const SubscriptionGrowth = () => {
   const { data: userGrowth, isLoading } = useGetOverViewQuery({
     year_payment: year,
   });
-  const yearOptions = userGrowth?.payment_year.map((yr, i) => {
+  const yearOptions = userGrowth?.payment_year?.map((yr, i) => {
     return (
       <Select.Option key={2024 + i} value={yr}>
         {yr}
@@ -44,7 +44,7 @@ const SubscriptionGrowth = () => {
         borderWidth: 3,
         fill: true,
         backgroundColor: (context) => {
-          const chart = context.chart;
+          const chart = context?.chart;
           const { ctx, chartArea } = chart;
           if (!chartArea) return null;
           const gradient = ctx.createLinearGradient(

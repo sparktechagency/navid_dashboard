@@ -2,7 +2,7 @@ import React from "react";
 
 const formatValue = ({ value }) => {
   if (value === undefined) return "N/A";
-  return value >= 1000 ? `${(value / 1000).toFixed(1)}K` : value.toString();
+  return value >= 1000 ? `${(value / 1000).toFixed(1)}K` : value?.toString();
 };
 
 const OverviewCart = ({ data, idx }) => {

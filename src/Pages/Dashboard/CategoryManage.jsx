@@ -19,7 +19,7 @@ const CategoryManage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmData, setConfirmData] = useState({});
-  const [recordToDelete, setRecordToDelete] = useState(null); 
+  const [recordToDelete, setRecordToDelete] = useState(null);
   const { data: categoriesData, isLoading: categoriesLoading } =
     useGetCategoryQuery();
   const [deleteCategory] = useDeleteCategoryMutation({});
@@ -104,14 +104,14 @@ const CategoryManage = () => {
 
   // Prepare categories data if it's available
   const categories = categoriesData
-    ? categoriesData.data.map((category, index) => ({
+    ? categoriesData?.data?.map((category, index) => ({
         sl_no: `# ${index + 1}`,
         name: category.name,
         image: category.img,
-        _id: category._id,
+        _id: category?._id,
       }))
     : [];
-
+  console.log(categories);
   return (
     <div>
       <div className="flex items-center justify-between mb-4">

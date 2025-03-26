@@ -26,9 +26,6 @@
   color: #f9f9f9;
 }
 
-/* .button-white {
-  @apply px-8 py-3 rounded-md flex justify-center items-center w-fit gap-2 bg-[var(--bg-green-high)] text-[var(--text-gray)]  hover:scale-105 transition-all active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100;
-} */
 * {
   font-family: 'Poppins';
 }
@@ -97,9 +94,7 @@ body {
     @apply md:grid md:grid-cols-2 flex flex-col justify-start items-start gap-4;
   }
 
-  /* .button-black {
-    @apply px-8 py-3 rounded-md flex justify-center items-center w-fit gap-2 bg-[var(--color-blue)] text-[var(--color-white)] border border-[var(--bg-black)] hover:scale-105 transition-all active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100;
-  } */
+
 
   .button-white {
     @apply px-8 py-3 rounded-md flex justify-center items-center w-fit gap-2 bg-[var(--color-white)] text-[var(--bg-black)]  hover:scale-102 transition-all active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100;
@@ -229,6 +224,6 @@ body {
 .ant-select-selection-search-input {
   display: none !important;
 }
-.ant-select-selection-placeholder{
+.ant-select-selection-placeholder {
   z-index: 999 !important;
 }
