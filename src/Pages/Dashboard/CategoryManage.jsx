@@ -138,12 +138,13 @@ const CategoryManage = () => {
         rowKey="_id"
         pagination={{
           current: categoriesData?.pagination?.currentPage || 1,
-          pageSize: categoriesData?.pagination?.limit || 10,
+          pageSize: categoriesData?.pagination?.itemsPerPage || 10,
           total: categoriesData?.pagination?.totalItems || 0,
           onChange: (page) => setCurrentPage(page),
         }}
         // onChange={handleTableChange}
       />
+   
       <Modal
         className="addcategory"
         open={categoryModalOpen}

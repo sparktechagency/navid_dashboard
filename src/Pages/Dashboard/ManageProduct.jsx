@@ -18,7 +18,7 @@ const TABS = [
 ];
 
 const ManageProducts = () => {
-  const [page, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [currentTab, setCurrentTab] = useState(TABS[0].key);
   const [searchKey, setSearchKey] = useState('');
 
@@ -27,6 +27,7 @@ const ManageProducts = () => {
   const { data: products, isLoading: productsLoading } = useGetProductQuery({
     whole_sale: isWholeSale,
     search: searchKey,
+    page: currentPage,
   });
 
   const [deleteProducts] = useDeleteProductsMutation();
@@ -45,12 +46,6 @@ const ManageProducts = () => {
       image: product?.banner || [],
       video: product?.variantImages?.video || [],
     })) || [];
-
-  const filteredData = transformedData.filter((item) =>
-    searchKey
-      ? item.productName.toLowerCase().includes(searchKey.toLowerCase())
-      : true
-  );
 
   const handleTabChange = (tab) => {
     setCurrentTab(tab);
@@ -177,17 +172,16 @@ const ManageProducts = () => {
           ))}
         </div>
         <Table
-          dataSource={filteredData}
+          dataSource={transformedData}
           columns={columns}
-          pagination={{
-            pageSize: 10,
-            current: page,
-            total: filteredData.length,
-            showSizeChanger: false,
-            onChange: (page) => setPage(page),
-          }}
           loading={productsLoading}
           rowKey="id"
+          pagination={{
+            current: products?.pagination?.currentPage || 1,
+            pageSize: products?.pagination?.itemsPerPage || 10,
+            total: products?.pagination?.totalItems || 0,
+            onChange: (page) => setCurrentPage(page),
+          }}
         />
       </div>
     </>

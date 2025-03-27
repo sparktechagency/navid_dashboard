@@ -3,10 +3,10 @@ import baseApis from '../baseApis/baseApis';
 export const ProductApis = baseApis.injectEndpoints({
   endpoints: (builder) => ({
     getProduct: builder.query({
-      query: ({ whole_sale, search }) => ({
+      query: ({ whole_sale, search, page }) => ({
         url: `/product/get-all`,
         method: 'GET',
-        params: { whole_sale, search },
+        params: { whole_sale, search, page },
       }),
       providesTags: ['product'],
     }),
