@@ -52,6 +52,17 @@ const ProductDetailsSection = ({
           </Form.Item>
         </Col>
       </Row>
+      <Row gutter={16}>
+        <Col xs={24} sm={12} md={12} lg={24}>
+          <Form.Item
+            label="Discount Amount"
+            name="previous_price"
+            rules={[{ required: true, message: 'Please enter the discount' }]}
+          >
+            <Input placeholder="please enter discount" />
+          </Form.Item>
+        </Col>
+      </Row>
 
       <Row gutter={16}>
         <Col xs={24} sm={12}>

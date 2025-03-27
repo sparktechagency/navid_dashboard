@@ -134,6 +134,7 @@ const AddProduct = () => {
       formData.append('quantity', cleanValues.quantity);
       formData.append('whole_sale', cleanValues.whole_sale);
       formData.append('description', cleanValues.description);
+      formData.append('previous_price', cleanValues.previous_price);
 
       if (videoFile) {
         formData.append('variants_video', videoFile);
@@ -176,6 +177,7 @@ const AddProduct = () => {
           category: '',
           quantity: '',
           whole_sale: true,
+          previous_price: 0,
         }}
       >
         <Row gutter={[16, 16]}>
@@ -307,6 +309,20 @@ const AddProduct = () => {
                     precision={2}
                     style={{ width: '100%' }}
                   />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col xs={24} sm={12} md={12} lg={24}>
+                <Form.Item
+                  label="Discount Amount"
+                  name="previous_price"
+                  rules={[
+                    { required: true, message: 'Please enter the discount' },
+                  ]}
+                >
+                  <Input placeholder="please enter discount" />
                 </Form.Item>
               </Col>
             </Row>

@@ -16,8 +16,6 @@ function Header() {
     email: profileData?.data?.email,
   };
 
- 
-
   const handleSignOut = () => {
     localStorage.removeItem('token');
     toast.success('Logout successful');
@@ -46,17 +44,17 @@ function Header() {
   );
 
   return (
-    <div className="px-10 shadow shadow-white bg-white h-16 flex justify-between items-center">
+    <div className="px-10 shadow shadow-black bg-white h-16 flex justify-between items-center">
       <img className="h-8" src={logo} alt="DealScout" />
       {profileLoading ? (
         ''
       ) : (
-        <div className="flex items-center  gap-4 text-2xl">
+        <div className="flex items-center !border-[1px] rounded-full gap-4 text-2xl">
           <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
             <Avatar
               size={40}
               src={imageUrl(user?.photoURL)}
-              className="cursor-pointer"
+              className="cursor-pointer "
             />
           </Dropdown>
         </div>

@@ -4,7 +4,7 @@ import { MdDelete } from 'react-icons/md';
 import PageHeading from '../../Components/Shared/PageHeading';
 import { FaPlus } from 'react-icons/fa6';
 import CategoryAddModal from '../../Components/modal/CategoryAddModal';
-import CategoryEditModal from '../../Components/modal/CategoryEditModal'; // Import the new modal
+import CategoryEditModal from '../../Components/modal/CategoryEditModal';
 import UsernameImage from '../../Utils/Sideber/UserImage';
 import { FaEdit } from 'react-icons/fa';
 import {
@@ -20,8 +20,10 @@ const CategoryManage = () => {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmData, setConfirmData] = useState({});
   const [recordToDelete, setRecordToDelete] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const { data: categoriesData, isLoading: categoriesLoading } =
-    useGetCategoryQuery();
+    useGetCategoryQuery({ page: currentPage });
+
   const [deleteCategory] = useDeleteCategoryMutation({});
 
   const handleDelete = async (record) => {
@@ -103,20 +105,18 @@ const CategoryManage = () => {
   ];
 
   // Prepare categories data if it's available
-  const categories = categoriesData
-    ? categoriesData?.data?.map((category, index) => ({
-        sl_no: `# ${index + 1}`,
-        name: category.name,
-        image: category.img,
-        _id: category?._id,
-      }))
-    : [];
-  console.log(categories);
+  const categories =
+    categoriesData?.data?.map((category, index) => ({
+      sl_no: `# ${index + 1 + (currentPage - 1)}`,
+      name: category.name,
+      image: category.img,
+      _id: category?._id,
+    })) || [];
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <PageHeading text="Category" />
-        {/* Search and add category button */}
         <div className="end-center">
           <Button
             onClick={() => setCategoryModalOpen(true)}
@@ -134,7 +134,15 @@ const CategoryManage = () => {
         loading={categoriesLoading}
         columns={columns}
         dataSource={categories}
+        bordered
         rowKey="_id"
+        pagination={{
+          current: categoriesData?.pagination?.currentPage || 1,
+          pageSize: categoriesData?.pagination?.limit || 10,
+          total: categoriesData?.pagination?.totalItems || 0,
+          onChange: (page) => setCurrentPage(page),
+        }}
+        // onChange={handleTableChange}
       />
       <Modal
         className="addcategory"

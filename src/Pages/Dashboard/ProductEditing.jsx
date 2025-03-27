@@ -62,6 +62,7 @@ const ProductEditing = () => {
         quantity: productData?.data?.quantity,
         description: productData?.data?.description,
         whole_sale: productData?.data?.whole_sale,
+        previous_price: productData?.data?.previous_price,
       };
       form.setFieldsValue(initialData);
       setCategoryId(productData?.data?.category?._id);
@@ -214,6 +215,7 @@ const ProductEditing = () => {
       formData.append('category', categoryId);
       formData.append('quantity', values.quantity);
       formData.append('whole_sale', values.whole_sale);
+      formData.append('previous_price', values.previous_price);
 
       const deletedPaths = productData?.data?.variantImages
         ? deletedVariants
