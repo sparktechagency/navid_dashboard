@@ -119,6 +119,7 @@ const UserManageTable = () => {
   return (
     <>
       <Table
+        bordered
         loading={isLoading}
         rowClassName={() => 'table-row'}
         className="mt-2"

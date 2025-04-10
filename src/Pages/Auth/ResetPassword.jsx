@@ -14,7 +14,7 @@ const ResetPassword = () => {
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
   const route = useNavigate();
   const onFinish = async (values) => {
-    console.log(values);
+
 
     try {
       if (values.password !== values.confirmPassword) {

@@ -4,8 +4,8 @@ import './index.css';
 import { RouterProvider } from 'react-router';
 import { Routes } from './Routes/Routes.jsx';
 import store from './Redux/store.js';
-import { Provider } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
+import { Provider } from 'react-redux';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

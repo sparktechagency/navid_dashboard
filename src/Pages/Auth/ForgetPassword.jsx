@@ -17,7 +17,6 @@ const ForgetPassword = () => {
       email: values.email,
     };
     const res = await forgotPassword({ data }).unwrap();
-    console.log(res);
     if (res?.success) {
       toast.success('please check your email for otp');
       route('/otp');

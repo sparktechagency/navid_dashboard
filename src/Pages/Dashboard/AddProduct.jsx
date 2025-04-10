@@ -114,7 +114,6 @@ const AddProduct = () => {
   const onFinish = async (values) => {
     try {
       const cleanValues = { ...values };
-      console.log(colorImages.length);
       if (colorImages.length <= 0) {
         toast.error('set atlast one image');
         return;
@@ -147,14 +146,13 @@ const AddProduct = () => {
         .forEach((key) => {
           formData.append(key, cleanValues[key]);
         });
-      console.log(cleanValues);
 
       const res = await createNewProduct({ data: cleanValues });
       if (res?.data?.success) {
-        console.log(res);
+
         toast.success(res?.data?.message || 'Product created successfully');
       } else {
-        console.log(res);
+
         toast.error(res?.error?.data?.message || 'product created failed');
       }
     } catch (error) {

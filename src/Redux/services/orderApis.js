@@ -4,7 +4,6 @@ export const orderApis = baseApis.injectEndpoints({
   endpoints: (builder) => ({
     getAllOrder: builder.query({
       query: ({ search }) => (
-        console.log(search),
         {
           url: `/order/get-all`,
           method: 'GET',
@@ -15,7 +14,6 @@ export const orderApis = baseApis.injectEndpoints({
     }),
     updateOrderStatus: builder.mutation({
       query: ({ id, data }) => (
-        console.log({ id, data }),
         {
           url: `/order/update/${id}`,
           method: 'PATCH',

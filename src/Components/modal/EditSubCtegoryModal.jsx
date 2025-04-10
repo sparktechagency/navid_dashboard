@@ -17,11 +17,8 @@ const EditSubCtegoryModal = ({ subCategory, closeModal }) => {
       image: values.subCategoryImage?.file,
       subName: values?.subCategoryName,
     };
-    console.log("Image URL: ", data);
-    // You can do additional operations here, such as calling an API
-
     message.success("Subcategory updated successfully!");
-    closeModal(); // Close modal after submission
+    closeModal(); 
   };
 
   return (

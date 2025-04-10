@@ -46,7 +46,6 @@ const CategoryManage = () => {
       if (response?.data?.success) {
         toast.success('Category deleted successfully.');
       } else {
-        console.log(response);
         toast.error(
           response?.error?.data?.message || 'Failed to delete category.'
         );
@@ -144,7 +143,7 @@ const CategoryManage = () => {
         }}
         // onChange={handleTableChange}
       />
-   
+
       <Modal
         className="addcategory"
         open={categoryModalOpen}

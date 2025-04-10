@@ -18,7 +18,6 @@ export const ProductApis = baseApis.injectEndpoints({
             formData.append(key, data[key]);
           }
         });
-        formData.forEach((el) => console.log({ el }));
         return {
           url: '/product/create',
           method: 'POST',

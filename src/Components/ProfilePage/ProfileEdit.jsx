@@ -12,7 +12,6 @@ const ProfileEdit = ({ image, defaultImage, data }) => {
       name: values?.name,
       phone: values?.phoneNumber,
     };
-    console.log(updateData);
     const formData = new FormData();
     Object.keys(updateData).forEach((key) => {
       formData.append(key, updateData[key]);

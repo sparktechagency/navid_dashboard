@@ -28,7 +28,6 @@ const PrivacyPolicy = () => {
       };
 
       const res = await updateSetting({ data: requestData }).unwrap();
-      console.log(res);
       toast.success(res?.message || 'Privacy Policy updated successfully!');
     } catch (error) {
       toast.error(

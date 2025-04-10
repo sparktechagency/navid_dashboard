@@ -51,8 +51,6 @@ const ProductEditing = () => {
   const [retainedVariants, setRetainedVariants] = useState([]);
   const [retainedVariantData, setRetainedVariantData] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
-  console.log('und', productData?.data?.category?._id);
-  console.log(productData?.data);
   useEffect(() => {
     if (productData) {
       const initialData = {

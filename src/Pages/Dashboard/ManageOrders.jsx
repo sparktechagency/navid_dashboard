@@ -102,6 +102,7 @@ const ManageOrders = () => {
         </div>
       </div>
       <Table
+      bordered
         loading={dataLoading}
         dataSource={orders}
         columns={columns}

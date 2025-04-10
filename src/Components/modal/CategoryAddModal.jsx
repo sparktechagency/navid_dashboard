@@ -47,7 +47,6 @@ const CategoryAddModal = ({ closeModal }) => {
         );
       }
     } catch (error) {
-      console.log(error)
       toast.error(error?.data?.message || 'Failed to add category. Please try again.');
     }
   };

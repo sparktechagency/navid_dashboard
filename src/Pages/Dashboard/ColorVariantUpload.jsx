@@ -11,7 +11,6 @@ const ColorVariantUpload = ({
   showPreview,
 }) => {
 
-  console.log(productData)
   return (
     <div>
       <label className="block mb-2 font-medium">Product Color Variants</label>

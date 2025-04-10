@@ -5,7 +5,6 @@ import { useGetCategoryQuery } from '../../Redux/services/categoriseApis';
 function SelectCategory({ category, setCategoryId }) {
   const { data: categoryData, isLoading: categoryLoading } =
     useGetCategoryQuery({});
-  console.log(categoryData);
   const handleCategoryChange = (value) => {
     setCategoryId(value);
   };

@@ -172,6 +172,7 @@ const ManageProducts = () => {
           ))}
         </div>
         <Table
+        bordered
           dataSource={transformedData}
           columns={columns}
           loading={productsLoading}

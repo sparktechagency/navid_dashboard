@@ -118,6 +118,7 @@ const SubscirberTable = ({ data, pagination }) => {
   return (
     <>
       <Table
+      bordered
         rowClassName={() => "table-row"}
         className="mt-2"
         dataSource={paymentDataInformation}

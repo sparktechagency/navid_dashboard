@@ -11,7 +11,7 @@ import TermsCondition from '../Pages/Dashboard/TermsCondition';
 import PrivacyPolicy from '../Pages/Dashboard/PrivacyPolicy';
 import Profile from '../Pages/Dashboard/Profile.jsx';
 import CategoryManage from '../Pages/Dashboard/CategoryManage.jsx';
-// import SubcategoryManagement from '../Pages/Dashboard/SubcategoryManagement.jsx';
+import PickupAddress from '../Pages/Dashboard/PickupAddress';
 import ManageOrder from '../Pages/Dashboard/ManageOrders.jsx';
 import AddProduct from '../Pages/Dashboard/AddProduct.jsx';
 import AllUser from '../Pages/Dashboard/AllUser.jsx';
@@ -21,7 +21,7 @@ import ManageProducts from '../Pages/Dashboard/ManageProduct.jsx';
 
 export const Routes = createBrowserRouter([
   {
-    path: '/',  
+    path: '/',
     element: (
       <PrivateRoute>
         <Dashboard />
@@ -56,10 +56,10 @@ export const Routes = createBrowserRouter([
         path: '/manage-products',
         element: <ManageProducts />,
       },
-      // {
-      //   path: '/addcategory-management',
-      //   element: <SubcategoryManagement />,
-      // },
+      {
+        path: '/pickup-address',
+        element: <PickupAddress />,
+      },
       {
         path: '/manage-category',
         element: <CategoryManage />,

@@ -16,13 +16,12 @@ const Login = () => {
   const onFinish = async ({ email, password }) => {
     try {
       const res = await setLogin({ data: { email, password } }).unwrap();
-      console.log(res);
+
       if (res?.success) {
         localStorage.setItem('token', res?.token);
         const token = localStorage.getItem('token');
         try {
           const decoded = jwtDecode(token);
-          console.log(decoded.role);
           if (decoded.role === 'ADMIN') {
             toast.success('Login successful');
             window.location.href = '/';
