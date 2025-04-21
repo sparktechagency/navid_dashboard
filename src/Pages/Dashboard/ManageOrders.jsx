@@ -78,9 +78,7 @@ const ManageOrders = () => {
         >
           <Select.Option value="pending">Pending</Select.Option>
           <Select.Option value="shipped">Shipped</Select.Option>
-          <Select.Option value="packing">Packing</Select.Option>
-          <Select.Option value="processing">Processing</Select.Option>
-          <Select.Option value="shipping">Shipping</Select.Option>
+          <Select.Option value="delivered">Delivered</Select.Option>
         </Select>
       ),
     },
@@ -102,7 +100,7 @@ const ManageOrders = () => {
         </div>
       </div>
       <Table
-      bordered
+        bordered
         loading={dataLoading}
         dataSource={orders}
         columns={columns}
