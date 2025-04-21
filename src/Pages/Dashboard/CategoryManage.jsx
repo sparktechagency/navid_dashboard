@@ -60,8 +60,8 @@ const CategoryManage = () => {
   };
 
   const handleEdit = (record) => {
-    setSelectedCategory(record);
     setEditModalOpen(true);
+    setSelectedCategory(record);
   };
 
   const columns = [
