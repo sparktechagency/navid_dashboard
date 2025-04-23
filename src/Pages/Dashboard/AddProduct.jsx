@@ -20,9 +20,9 @@ import PageHeading from '../../Components/Shared/PageHeading';
 import toast from 'react-hot-toast';
 import { useCreateProductsMutation } from '../../Redux/services/ProductApis';
 import SelectCategory from '../../Components/Shared/SelectCategory';
+import { colorOptions } from './color';
 
 const { TextArea } = Input;
-const { Option } = Select;
 
 const AddProduct = () => {
   const [createNewProduct, { isLoading }] = useCreateProductsMutation();
@@ -34,7 +34,7 @@ const AddProduct = () => {
   const handleVideoChange = (info) => {
     setVideoFile(info.file);
     form.setFieldValue('variants_video', info.file);
-  };
+  };  
 
   const handleColorImageChange = (info, color) => {
     const key = `variants_${color.toLowerCase()}`;
@@ -89,32 +89,10 @@ const AddProduct = () => {
     form.setFieldValue(key, undefined);
   };
 
-  const colorOptions = [
-    { value: 'red', color: '#ff0000', label: 'Red' },
-    { value: 'blue', color: '#0000ff', label: 'Blue' },
-    { value: 'yellow', color: '#ffff00', label: 'Yellow' },
-    { value: 'purple', color: '#800080', label: 'Purple' },
-    { value: 'orange', color: '#ffa500', label: 'Orange' },
-    { value: 'black', color: '#000000', label: 'Black' },
-    {
-      value: 'white',
-      color: '#ffffff',
-      label: 'White',
-    },
-    { value: 'pink', color: '#ffc0cb', label: 'Pink' },
-    { value: 'indigo', color: '#4b0082', label: 'Indigo' },
-    { value: 'lightblue', color: '#add8e6', label: 'Light Blue' },
-    { value: 'brown', color: '#a52a2a', label: 'Brown' },
-    { value: 'gray', color: '#808080', label: 'Gray' },
-    { value: 'silver', color: '#c0c0c0', label: 'Silver' },
-    { value: 'gold', color: '#ffd700', label: 'Gold' },
-    { value: 'darkgreen', color: '#006400', label: 'Dark Green' },
-  ];
-
   const onFinish = async (values) => {
     try {
       const cleanValues = { ...values };
-      if (colorImages.length <= 0) {
+      if (Object.keys(colorImages).length <= 0) {
         toast.error('set atlast one image');
         return;
       }
@@ -149,10 +127,8 @@ const AddProduct = () => {
 
       const res = await createNewProduct({ data: cleanValues });
       if (res?.data?.success) {
-
         toast.success(res?.data?.message || 'Product created successfully');
       } else {
-
         toast.error(res?.error?.data?.message || 'product created failed');
       }
     } catch (error) {

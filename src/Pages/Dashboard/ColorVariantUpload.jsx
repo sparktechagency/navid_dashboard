@@ -10,7 +10,6 @@ const ColorVariantUpload = ({
   removeColorImage,
   showPreview,
 }) => {
-
   return (
     <div>
       <label className="block mb-2 font-medium">Product Color Variants</label>
@@ -35,7 +34,10 @@ const ColorVariantUpload = ({
             >
               <div className="text-center">
                 <div
-                  className={`w-full h-8 ${item.color} rounded mb-1 ${
+                  style={{
+                    backgroundColor: item.color,
+                  }}
+                  className={`w-full h-8 rounded mb-1 ${
                     isExistingVariant ? 'ring-2 ring-blue-500' : ''
                   }`}
                 ></div>
@@ -55,7 +57,6 @@ const ColorVariantUpload = ({
                       }
                     />
                     <div className="absolute top-1 right-1 flex gap-1">
-                    
                       <Button
                         size="small"
                         type="text"

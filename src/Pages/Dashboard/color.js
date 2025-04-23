@@ -1,0 +1,21 @@
+export const colorOptions = [
+  { value: 'red', color: '#ff0000', label: 'Red' },
+  { value: 'blue', color: '#0000ff', label: 'Blue' },
+  { value: 'yellow', color: '#ffff00', label: 'Yellow' },
+  { value: 'purple', color: '#800080', label: 'Purple' },
+  { value: 'orange', color: '#ffa500', label: 'Orange' },
+  { value: 'black', color: '#000000', label: 'Black' },
+  {
+    value: 'white',
+    color: '#ffffff',
+    label: 'White',
+  },
+  { value: 'pink', color: '#ffc0cb', label: 'Pink' },
+  { value: 'indigo', color: '#4b0082', label: 'Indigo' },
+  { value: 'lightblue', color: '#add8e6', label: 'Light Blue' },
+  { value: 'brown', color: '#a52a2a', label: 'Brown' },
+  { value: 'gray', color: '#808080', label: 'Gray' },
+  { value: 'silver', color: '#c0c0c0', label: 'Silver' },
+  { value: 'gold', color: '#ffd700', label: 'Gold' },
+  { value: 'darkgreen', color: '#006400', label: 'Dark Green' },
+];

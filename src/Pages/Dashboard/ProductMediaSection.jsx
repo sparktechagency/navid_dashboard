@@ -3,6 +3,8 @@ import ColorVariantUpload from './ColorVariantUpload';
 import VideoUpload from './VideoUpload';
 
 const ProductMediaSection = ({
+  removeVideo,
+  videoFile,
   loadingVideo,
   videoPreview,
   handleVideoChange,
@@ -18,6 +20,8 @@ const ProductMediaSection = ({
       <h3 className="text-lg font-medium mb-4">Product Media</h3>
 
       <VideoUpload
+        removeVideo={removeVideo}
+        videoFile={videoFile}
         loadingVideo={loadingVideo}
         videoPreview={videoPreview}
         handleVideoChange={handleVideoChange}

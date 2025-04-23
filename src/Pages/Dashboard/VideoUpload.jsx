@@ -1,8 +1,21 @@
 import React from 'react';
 import { Upload, Button, Spin } from 'antd';
-import { VideoCameraOutlined, EyeOutlined } from '@ant-design/icons';
+import { VideoCameraOutlined, EyeOutlined, VideoCameraAddOutlined } from '@ant-design/icons';
 
-const VideoUpload = ({ loadingVideo, videoPreview, handleVideoChange, showPreview }) => {
+const VideoUpload = ({
+  removeVideo,
+  videoFile,
+  loadingVideo,
+  videoPreview,
+  handleVideoChange,
+  showPreview,
+}) => {
+  const handleRemoveVideo = () => {
+    removeVideo();
+  };
+
+  console.log(videoFile ,'videoFile');
+
   return (
     <div className="mb-6">
       <label className="block mb-2 font-medium">Product Video</label>
@@ -20,9 +33,16 @@ const VideoUpload = ({ loadingVideo, videoPreview, handleVideoChange, showPrevie
           ></video>
           <div className="absolute top-2 right-2 flex gap-2">
             <Button
+              icon={<VideoCameraAddOutlined />}
+              className="rounded-full"
+              onClick={handleRemoveVideo}
+            />
+            <Button
               icon={<EyeOutlined />}
               className="rounded-full"
-              onClick={() => showPreview('video', videoPreview, 'Product Video')}
+              onClick={() =>
+                showPreview('video', videoPreview, 'Product Video')
+              }
             />
           </div>
         </div>

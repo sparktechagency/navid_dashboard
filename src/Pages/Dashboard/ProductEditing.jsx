@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Form, Row, Col, Modal, Spin } from 'antd';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { Form, Row, Col, Modal, Spin, message } from 'antd';
 import {
   useSingleProductGetQuery,
   useUpdateProductMutation,
@@ -10,203 +10,252 @@ import toast from 'react-hot-toast';
 import { imageUrl } from '../../Utils/server';
 import ProductMediaSection from './ProductMediaSection';
 import ProductDetailsSection from './ProductDetailsSection';
-
-const colorOptions = [
-  { value: 'red', color: 'bg-red-500', label: 'Red' },
-  { value: 'blue', color: 'bg-blue-500', label: 'Blue' },
-  { value: 'green', color: 'bg-green-500', label: 'Green' },
-  { value: 'yellow', color: 'bg-yellow-500', label: 'Yellow' },
-  { value: 'purple', color: 'bg-purple-500', label: 'Purple' },
-  { value: 'orange', color: 'bg-orange-500', label: 'Orange' },
-  { value: 'black', color: 'bg-black', label: 'Black' },
-  { value: 'white', color: 'bg-white border border-gray-300', label: 'White' },
-  { value: 'pink', color: 'bg-pink-500', label: 'Pink' },
-];
+import { colorOptions } from './color';
 
 const ProductEditing = () => {
   const [form] = Form.useForm();
   const location = useLocation();
   const navigate = useNavigate();
   const productId = location.state;
+  const urlObjectsRef = useRef([]);
 
   const { data: productData, isLoading: singleProductLoading } =
     useSingleProductGetQuery({ id: productId });
+  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
 
-  const [updateProduct, { isLoading }] = useUpdateProductMutation();
-  const [tab, setTab] = useState(productData?.data?.whole_sale ?? true);
-  const [videoFile, setVideoFile] = useState(null);
-  const [colorImages, setColorImages] = useState({});
-  const [colorImagePreviews, setColorImagePreviews] = useState({});
-  const [existingImages, setExistingImages] = useState({});
-  const [productVideo, setProductVideo] = useState(null);
-  const [videoPreview, setVideoPreview] = useState(null);
-  const [previewVisible, setPreviewVisible] = useState(false);
-  const [previewMedia, setPreviewMedia] = useState({
-    type: null,
-    url: null,
-    title: null,
-  });
-  const [loadingVideo, setLoadingVideo] = useState(false);
-  const [deletedVariants, setDeletedVariants] = useState([]);
-  const [retainedVariants, setRetainedVariants] = useState([]);
-  const [retainedVariantData, setRetainedVariantData] = useState([]);
+  const [isWholesale, setIsWholesale] = useState(true);
   const [categoryId, setCategoryId] = useState(null);
+
+  const [mediaState, setMediaState] = useState({
+    video: {
+      file: null,
+      preview: null,
+      existingPath: null,
+      markedForDeletion: false,
+      isLoading: false,
+    },
+
+    variants: {
+      data: {},
+
+      retained: [],
+      deleted: [],
+    },
+  });
+
+  const [previewModal, setPreviewModal] = useState({
+    visible: false,
+    media: { type: null, url: null, title: null },
+  });
+
   useEffect(() => {
-    if (productData) {
-      const initialData = {
-        category: productData?.data?.category?._id,
-        name: productData?.data?.name,
-        price: productData?.data?.price,
-        quantity: productData?.data?.quantity,
-        description: productData?.data?.description,
-        whole_sale: productData?.data?.whole_sale,
-        previous_price: productData?.data?.previous_price,
-      };
-      form.setFieldsValue(initialData);
-      setCategoryId(productData?.data?.category?._id);
-      if (productData?.data?.variantImages) {
-        const previews = {};
-        const existingImgs = {};
-        const retained = [];
-        const retainedData = [];
+    if (!productData?.data) return;
 
-        Object.entries(productData?.data?.variantImages).forEach(
-          ([color, images]) => {
-            if (images && images.length > 0) {
-              const key = `variants_${color.toLowerCase()}`;
-              const imageUrl = images[0].startsWith('http')
-                ? images[0]
-                : `${import.meta.env.VITE_PUBLIC_API_URL || ''}/${images[0]}`;
+    const { data } = productData;
+    form.setFieldsValue({
+      category: data.category?._id,
+      name: data.name,
+      price: data.price,
+      quantity: data.quantity,
+      description: data.description,
+      whole_sale: data.whole_sale,
+      previous_price: data.previous_price,
+    });
 
-              previews[key] = imageUrl;
-              existingImgs[key] = images[0];
-              retained.push(color.toLowerCase());
+    setIsWholesale(data.whole_sale ?? true);
+    setCategoryId(data.category?._id);
 
-              retainedData.push({
-                img: [images[0]],
-                color: color.toLowerCase(),
-              });
-            }
-          }
-        );
+    if (data.variantImages) {
+      const variantsData = {};
+      const retainedVariants = [];
 
-        setColorImagePreviews(previews);
-        setExistingImages(existingImgs);
-        setRetainedVariants(retained);
-        setRetainedVariantData(retainedData);
-      }
+      Object.entries(data.variantImages).forEach(([color, images]) => {
+        if (color === 'video') return;
 
-      if (productData.video) {
-        setProductVideo(productData.video);
-        setVideoPreview(
-          `${import.meta.env.VITE_PUBLIC_API_URL || ''}/${productData.video}`
-        );
-      }
+        if (images && images.length > 0) {
+          const colorKey = color.toLowerCase();
+          const imagePath = images[0];
+          const imagePreviewUrl = imagePath.startsWith('http')
+            ? imagePath
+            : `${import.meta.env.VITE_PUBLIC_API_URL || ''}/${imagePath}`;
+
+          variantsData[colorKey] = {
+            file: null,
+            preview: imagePreviewUrl,
+            existingPath: imagePath,
+            markedForDeletion: false,
+          };
+
+          retainedVariants.push({
+            color: colorKey,
+            img: [imagePath],
+          });
+        }
+      });
+
+      const videoPath = data.variantImages.video?.[0];
+      const videoPreview = videoPath
+        ? `${import.meta.env.VITE_PUBLIC_API_URL || ''}/${videoPath}`
+        : null;
+
+      setMediaState((prev) => ({
+        video: {
+          ...prev.video,
+          preview: videoPreview,
+          existingPath: videoPath,
+          markedForDeletion: false,
+        },
+        variants: {
+          data: variantsData,
+          retained: retainedVariants,
+          deleted: [],
+        },
+      }));
     }
   }, [productData, form]);
 
-  const handleVideoChange = useCallback((info) => {
-    setLoadingVideo(true);
+  useEffect(() => {
+    return () => {
+      urlObjectsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
 
-    if (info.file) {
+  const handleVideoChange = useCallback((info) => {
+    if (!info.file) return;
+
+    setMediaState((prev) => ({
+      ...prev,
+      video: { ...prev.video, isLoading: true },
+    }));
+
+    try {
       if (info.file.size > 100 * 1024 * 1024) {
         toast.error('Video file is too large. Maximum size is 100MB.');
-        setLoadingVideo(false);
         return;
       }
 
       const videoURL = URL.createObjectURL(info.file);
-      setVideoFile(info.file);
-      setVideoPreview(videoURL);
-      setProductVideo(null);
-    }
+      urlObjectsRef.current.push(videoURL);
 
-    setLoadingVideo(false);
+      setMediaState((prev) => ({
+        ...prev,
+        video: {
+          file: info.file,
+          preview: videoURL,
+          existingPath: prev.video.existingPath,
+          markedForDeletion: false,
+          isLoading: false,
+        },
+      }));
+    } catch (error) {
+      toast.error('Error processing video file');
+      setMediaState((prev) => ({
+        ...prev,
+        video: { ...prev.video, isLoading: false },
+      }));
+    }
   }, []);
 
   const handleColorImageChange = useCallback((info, color) => {
-    const key = `variants_${color.toLowerCase()}`;
-    const colorLower = color.toLowerCase();
+    if (!info.file) return;
 
-    if (info.file) {
+    try {
+      const colorKey = color.toLowerCase();
+
       if (info.file.size > 5 * 1024 * 1024) {
         toast.error(`Image for ${color} is too large. Maximum size is 5MB.`);
         return;
       }
 
-      setColorImages((prev) => ({ ...prev, [key]: info.file }));
-      setDeletedVariants((prev) => prev.filter((item) => item !== colorLower));
-      setRetainedVariants((prev) =>
-        prev.includes(colorLower) ? prev : [...prev, colorLower]
-      );
-      setExistingImages((prev) => {
-        const newState = { ...prev };
-        delete newState[key];
-        return newState;
-      });
-
       const reader = new FileReader();
       reader.onload = () => {
-        setColorImagePreviews((prev) => ({ ...prev, [key]: reader.result }));
+        setMediaState((prev) => {
+          const updatedVariants = { ...prev.variants };
+
+          updatedVariants.data = {
+            ...updatedVariants.data,
+            [colorKey]: {
+              file: info.file,
+              preview: reader.result,
+              existingPath: null,
+              markedForDeletion: false,
+            },
+          };
+
+          updatedVariants.deleted = updatedVariants.deleted.filter(
+            (c) => c !== colorKey
+          );
+
+          if (!updatedVariants.retained.some((v) => v.color === colorKey)) {
+            updatedVariants.retained = [
+              ...updatedVariants.retained,
+              { color: colorKey, img: [] },
+            ];
+          }
+
+          return { ...prev, variants: updatedVariants };
+        });
       };
+
       reader.readAsDataURL(info.file);
+    } catch (error) {
+      toast.error(`Error processing image for ${color}`);
     }
   }, []);
 
-  const removeColorImage = useCallback(
-    (color) => {
-      const key = `variants_${color.toLowerCase()}`;
-      const colorLower = color.toLowerCase();
+  const removeColorImage = useCallback((color) => {
+    const colorKey = color.toLowerCase();
 
-      if (!deletedVariants.includes(colorLower)) {
-        setDeletedVariants([...deletedVariants, colorLower]);
+    setMediaState((prev) => {
+      const updatedVariants = { ...prev.variants };
+      const variantData = { ...updatedVariants.data };
+
+      if (variantData[colorKey]?.existingPath) {
+        updatedVariants.deleted = [...updatedVariants.deleted, colorKey];
       }
 
-      setRetainedVariants((prev) => prev.filter((item) => item !== colorLower));
-      setRetainedVariantData((prev) =>
-        prev.filter((item) => item.color !== colorLower)
+      updatedVariants.retained = updatedVariants.retained.filter(
+        (v) => v.color !== colorKey
       );
 
-      setColorImages((prev) => {
-        const newState = { ...prev };
-        delete newState[key];
-        return newState;
-      });
+      delete variantData[colorKey];
+      updatedVariants.data = variantData;
 
-      setColorImagePreviews((prev) => {
-        const newState = { ...prev };
-        delete newState[key];
-        return newState;
-      });
-
-      setExistingImages((prev) => {
-        const newState = { ...prev };
-        delete newState[key];
-        return newState;
-      });
-    },
-    [deletedVariants]
-  );
+      return { ...prev, variants: updatedVariants };
+    });
+  }, []);
 
   const removeVideo = useCallback(() => {
-    setVideoFile(null);
-    setVideoPreview(null);
-    setProductVideo(null);
+    setMediaState((prev) => ({
+      ...prev,
+      video: {
+        ...prev.video,
+        file: null,
+        preview: null,
+        markedForDeletion: prev.video.existingPath !== null,
+      },
+    }));
   }, []);
 
   const showPreview = useCallback((type, url, title) => {
-    setPreviewMedia({ type, url, title });
-    setPreviewVisible(true);
+    setPreviewModal({
+      visible: true,
+      media: { type, url, title },
+    });
   }, []);
 
   const handlePreviewClose = useCallback(() => {
-    setPreviewVisible(false);
+    setPreviewModal((prev) => ({
+      ...prev,
+      visible: false,
+    }));
   }, []);
 
   const onFinish = async (values) => {
     try {
       const formData = new FormData();
-      formData.append('id', productData.id);
+
+      formData.append('id', productData?.data?._id);
       formData.append('name', values.name);
       formData.append('description', values.description);
       formData.append('price', values.price);
@@ -215,52 +264,38 @@ const ProductEditing = () => {
       formData.append('whole_sale', values.whole_sale);
       formData.append('previous_price', values.previous_price);
 
-      const deletedPaths = productData?.data?.variantImages
-        ? deletedVariants
-            .map((color) => {
-              const images = productData?.data?.variantImages[color];
-              return images && images.length > 0 ? images[0] : null;
-            })
-            .filter(Boolean)
-        : [];
+      const deletedPaths = mediaState.variants.deleted
+        .map((colorKey) => {
+          const variantImg = productData?.data?.variantImages?.[colorKey];
+          return variantImg && variantImg.length > 0 ? variantImg[0] : null;
+        })
+        .filter(Boolean);
 
       formData.append('deleted_variants', JSON.stringify(deletedPaths));
 
-      const finalRetainedVariants = [...retainedVariantData];
-      Object.entries(colorImages).forEach(([key, file]) => {
-        if (file instanceof File) {
-          const color = key.replace('variants_', '');
-          if (!finalRetainedVariants.some((item) => item.color === color)) {
-            finalRetainedVariants.push({ color, img: [] });
-          }
-        }
-      });
+      if (mediaState.video.markedForDeletion && mediaState.video.existingPath) {
+        formData.append(
+          'deleted_video',
+          JSON.stringify([mediaState.video.existingPath])
+        );
+      }
 
       formData.append(
         'retained_variants',
-        JSON.stringify(finalRetainedVariants)
+        JSON.stringify(mediaState.variants.retained)
       );
 
-      if (videoFile) {
-        formData.append('video', videoFile);
-      } else if (productVideo) {
-        formData.append('video', productVideo);
-      } else {
-        formData.append('video', '');
+      if (mediaState.video.file) {
+        formData.append('variants_video', mediaState.video.file);
       }
 
-      colorOptions.forEach((color) => {
-        const key = `variants_${color.value}`;
-        const file = colorImages[key];
-        if (file instanceof File) {
-          formData.append(key, file);
+      Object.entries(mediaState.variants.data).forEach(([colorKey, data]) => {
+        if (data.file) {
+          formData.append(`variants_${colorKey}`, data.file);
         }
       });
 
-      const response = await updateProduct({
-        id: productId,
-        data: formData,
-      });
+      const response = await updateProduct({ id: productId, data: formData });
 
       if (response.error) {
         throw new Error(response.error.message || 'Failed to update product');
@@ -295,12 +330,18 @@ const ProductEditing = () => {
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={12} lg={8}>
             <ProductMediaSection
-              loadingVideo={loadingVideo}
-              videoPreview={videoPreview}
+              removeVideo={removeVideo}
+              videoFile={mediaState.video.file}
+              loadingVideo={mediaState.video.isLoading}
+              videoPreview={mediaState.video.preview}
               handleVideoChange={handleVideoChange}
               showPreview={showPreview}
               colorOptions={colorOptions}
-              colorImagePreviews={colorImagePreviews}
+              colorImagePreviews={Object.fromEntries(
+                Object.entries(mediaState.variants.data).map(
+                  ([color, data]) => [`variants_${color}`, data.preview]
+                )
+              )}
               productData={productData}
               handleColorImageChange={handleColorImageChange}
               removeColorImage={removeColorImage}
@@ -309,12 +350,12 @@ const ProductEditing = () => {
 
           <Col xs={24} sm={12} md={12} lg={16}>
             <ProductDetailsSection
-              tab={tab}
-              setTab={setTab}
+              tab={isWholesale}
+              setTab={setIsWholesale}
               productData={productData}
               categoryId={categoryId}
               setCategoryId={setCategoryId}
-              isLoading={isLoading}
+              isLoading={isUpdating}
               navigate={navigate}
             />
           </Col>
@@ -322,8 +363,8 @@ const ProductEditing = () => {
       </Form>
 
       <PreviewModal
-        previewVisible={previewVisible}
-        previewMedia={previewMedia}
+        previewVisible={previewModal.visible}
+        previewMedia={previewModal.media}
         handlePreviewClose={handlePreviewClose}
       />
     </div>
@@ -341,7 +382,7 @@ const PreviewModal = ({ previewVisible, previewMedia, handlePreviewClose }) => (
     {previewMedia.type === 'image' ? (
       <img alt="preview" style={{ width: '100%' }} src={previewMedia.url} />
     ) : (
-      <video width="100%" controls src={imageUrl(previewMedia.url)}></video>
+      <video width="100%" controls src={previewMedia.url}></video>
     )}
   </Modal>
 );
