@@ -1,4 +1,4 @@
-export const url = import.meta.env.VITE_PUBLIC_API_URL;
+export const url = `https://api.divandioneapp.com`;
 export const imageUrl = (image) => {
   return image
     ? image?.startsWith(`http`)

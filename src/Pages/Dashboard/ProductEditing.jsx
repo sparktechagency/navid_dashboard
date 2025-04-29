@@ -77,7 +77,7 @@ const ProductEditing = () => {
           const imagePath = images[0];
           const imagePreviewUrl = imagePath.startsWith('http')
             ? imagePath
-            : `${import.meta.env.VITE_PUBLIC_API_URL || ''}/${imagePath}`;
+            : `https://api.divandioneapp.com/${imagePath}`;
 
           variantsData[colorKey] = {
             file: null,
@@ -95,7 +95,7 @@ const ProductEditing = () => {
 
       const videoPath = data.variantImages.video?.[0];
       const videoPreview = videoPath
-        ? `${import.meta.env.VITE_PUBLIC_API_URL || ''}/${videoPath}`
+        ? `https://api.divandioneapp.com/${videoPath}`
         : null;
 
       setMediaState((prev) => ({
