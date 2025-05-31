@@ -1,4 +1,5 @@
-import baseApis from '../baseApis/baseApis';
+import baseApis from "../baseApis/baseApis";
+
 
 export const authApis = baseApis.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,7 +20,7 @@ export const authApis = baseApis.injectEndpoints({
     forgetEmailPost: builder.mutation({
       query: ({ data }) => {
         return {
-          url: '/verification/create',
+          url: '/auth/forgot-password',
           method: 'POST',
           body: data,
         };
@@ -27,7 +28,7 @@ export const authApis = baseApis.injectEndpoints({
     }),
     verifyOtp: builder.mutation({
       query: ({ data }) => ({
-        url: '/verification/verify',
+        url: '/auth/forget-pass-otp-verify',
         method: 'POST',
         body: data,
       }),
@@ -44,7 +45,7 @@ export const authApis = baseApis.injectEndpoints({
     }),
     resendOtp: builder.mutation({
       query: (data) => ({
-        url: '/auth/resend-reset-code',
+        url: '/auth/activation-code-resend',
         method: 'POST',
         body: data,
       }),
