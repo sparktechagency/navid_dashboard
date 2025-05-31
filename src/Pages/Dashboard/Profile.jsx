@@ -11,7 +11,7 @@ const Tabs = ['Edit Profile', 'Change Password'];
 
 const Profile = () => {
   const [tab, setTab] = useState(Tabs[0]);
-  const { data: profileData, isLoading } = useGetProfileDataQuery({});
+  const { data: profileData, isLoading } = useGetProfileDataQuery();
   const [image, setImage] = useState(null);
   const handleImageUpload = (e) => {
     if (e.target.files?.[0]) {

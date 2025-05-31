@@ -19,7 +19,7 @@ const ProfileEdit = ({ image, defaultImage, data }) => {
 
     if (image === null) {
       formData.delete('img', image);
-    }else{
+    } else {
       formData.append('img', image);
     }
 
@@ -115,7 +115,11 @@ const ProfileEdit = ({ image, defaultImage, data }) => {
           disabled={isProfileUpdate}
           className="!bg-[#3872F0] !hover:bg-[#3872F0] active:bg-[#3872F0] w-full"
         >
-          {isProfileUpdate ? <Spin /> : 'Update Profile'}
+          {isProfileUpdate ? (
+            <span className="loader"></span>
+          ) : (
+            'Update Profile'
+          )}
         </Button>
       </Form>
     </div>
