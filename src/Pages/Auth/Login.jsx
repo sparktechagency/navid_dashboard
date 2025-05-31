@@ -5,38 +5,24 @@ import 'antd/dist/reset.css';
 import { Link } from 'react-router';
 import { useLoginPostMutation } from '../../Redux/services/authApis';
 import toast from 'react-hot-toast';
-import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router';
 
 const { Title, Text } = Typography;
 const Login = () => {
   const [setLogin, { data, isLoading }] = useLoginPostMutation();
-  const route = useNavigate();
-  const [error, setError] = useState('');
   const onFinish = async ({ email, password }) => {
     try {
-      const res = await setLogin({ data: { email, password } }).unwrap();
-
-      if (res?.success) {
-        localStorage.setItem('token', res?.token);
-        const token = localStorage.getItem('token');
-        try {
-          const decoded = jwtDecode(token);
-          if (decoded.role === 'ADMIN') {
-            toast.success('Login successful');
+      await setLogin({ data: { email, password } })
+        .unwrap()
+        .then((res) => {
+          if (res?.success) {
+            localStorage.setItem('token', res?.token);
+            toast.success(res?.message || 'Login successful');
             window.location.href = '/';
           } else {
-            localStorage.removeItem('token');
-            window.location.href = '/login';
+            toast.error(res?.message || 'Login failed. Please try again.');
           }
-        } catch (decodeError) {
-          setError('Failed to process login. Invalid token.');
-        }
-      } else {
-        toast.error(res?.message || 'Login failed. Please try again.');
-      }
+        });
     } catch (error) {
-      console.error('Login Error:', error);
       toast.error(
         error?.data?.message || error?.message || 'An unexpected error occurred'
       );
@@ -53,9 +39,7 @@ const Login = () => {
           <Title level={3} className="mb-1">
             Welcome back,
           </Title>
-          <Text type="secondary" className=" !text-red-500">
-            {error}
-          </Text>
+          <Text type="secondary">Sign in to your account to continue</Text>
         </div>
 
         <Form requiredMark={false} layout="vertical" onFinish={onFinish}>

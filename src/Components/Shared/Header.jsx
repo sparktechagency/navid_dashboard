@@ -39,7 +39,6 @@ function Header() {
       <Menu.Item key="4" icon={<LogoutOutlined />} onClick={handleSignOut}>
         Log out
       </Menu.Item>
-      <div className="text-center text-gray-400 text-sm p-2">v1.10</div>
     </Menu>
   );
 

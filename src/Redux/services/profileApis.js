@@ -6,6 +6,9 @@ export const profileApis = baseApis.injectEndpoints({
       query: () => ({
         url: '/auth/profile',
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        }
       }),
       providesTags: ['profile'],
     }),
