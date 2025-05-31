@@ -3,7 +3,7 @@ import { Button, Form, message, Spin } from 'antd';
 import { useUpdateProfileDataMutation } from '../../Redux/services/profileApis';
 import toast from 'react-hot-toast';
 
-const ProfileEdit = ({ image, defaultImage, data }) => {
+const ProfileEdit = ({ image, defaultImage, data, refetch }) => {
   const [form] = Form.useForm();
   const [setProfileUpdate, { isLoading: isProfileUpdate }] =
     useUpdateProfileDataMutation();
@@ -27,6 +27,7 @@ const ProfileEdit = ({ image, defaultImage, data }) => {
       const res = await setProfileUpdate(formData);
       if (res?.data?.success) {
         toast.success(res?.data?.message || 'Profile updated successfully');
+        refetch();
       }
     } catch (error) {
       console.error('Failed to update profile:', error);
