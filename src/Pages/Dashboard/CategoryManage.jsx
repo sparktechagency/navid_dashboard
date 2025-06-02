@@ -135,6 +135,7 @@ const CategoryManage = () => {
         dataSource={categories}
         bordered
         rowKey="_id"
+        scroll={{ x: 1500 }}
         pagination={{
           current: categoriesData?.pagination?.currentPage || 1,
           pageSize: categoriesData?.pagination?.itemsPerPage || 10,

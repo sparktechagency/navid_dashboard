@@ -106,6 +106,7 @@ const ManageOrders = () => {
         columns={columns}
         rowKey="_id"
         pagination={{ pageSize: 5 }}
+         scroll={{ x: 1500 }}
       />
     </div>
   );

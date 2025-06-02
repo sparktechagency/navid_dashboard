@@ -31,10 +31,11 @@ const AddProduct = () => {
   const [videoFile, setVideoFile] = useState(null);
   const [colorImages, setColorImages] = useState({});
   const [colorImagePreviews, setColorImagePreviews] = useState({});
+
   const handleVideoChange = (info) => {
     setVideoFile(info.file);
     form.setFieldValue('variants_video', info.file);
-  };  
+  };
 
   const handleColorImageChange = (info, color) => {
     const key = `variants_${color.toLowerCase()}`;
@@ -128,6 +129,11 @@ const AddProduct = () => {
       const res = await createNewProduct({ data: cleanValues });
       if (res?.data?.success) {
         toast.success(res?.data?.message || 'Product created successfully');
+        form.resetFields();
+        setVideoFile(null);
+        setColorImages({});
+        setColorImagePreviews({});
+        setTab('Wholesaler');
       } else {
         toast.error(res?.error?.data?.message || 'product created failed');
       }
@@ -157,22 +163,40 @@ const AddProduct = () => {
         <Row gutter={[16, 16]}>
           {/* Product Video Upload */}
           <Col xs={24} sm={12} md={12} lg={8}>
-            <Form.Item label="Upload Product Video" name="variants_video">
-              <Upload
-                listType="picture-card"
-                file={videoFile}
-                onChange={handleVideoChange}
-                beforeUpload={() => false}
-                accept="video/*"
-                maxCount={1}
-              >
-                <div>
-                  <VideoCameraOutlined />
-                  <div className="mt-2 text-sm">Browse Video</div>
-                </div>
-              </Upload>
-            </Form.Item>
-
+            {videoFile ? (
+              <div>
+                <video
+                  src={URL.createObjectURL(videoFile)}
+                  controls
+                  className="w-full"
+                />
+                <Button
+                  onClick={() => {
+                    setVideoFile(null);
+                    form.setFieldValue('variants_video', null);
+                  }}
+                  className="!mt-2 !bg-red-500 !text-white"
+                >
+                  Remove Video
+                </Button>
+              </div>
+            ) : (
+              <Form.Item label="Upload Product Video" name="variants_video">
+                <Upload
+                  listType="picture-card"
+                  file={videoFile}
+                  onChange={handleVideoChange}
+                  beforeUpload={() => false}
+                  accept="video/*"
+                  maxCount={1}
+                >
+                  <div>
+                    <VideoCameraOutlined />
+                    <div className="mt-2 text-sm">Browse Video</div>
+                  </div>
+                </Upload>
+              </Form.Item>
+            )}
             {/* Color-based Image Uploads */}
             <div className="mt-4">
               <label className="block mb-2 font-medium">

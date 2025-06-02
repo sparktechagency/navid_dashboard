@@ -20,7 +20,7 @@ const PickupAddress = () => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await deleteAddress({id});
+      const res = await deleteAddress({ id });
       if (res?.data?.success) {
         toast.success(res?.data?.message);
       } else {
@@ -87,6 +87,7 @@ const PickupAddress = () => {
       </div>
       <Table
         bordered
+        scroll={{ x: 1500 }}
         loading={pickupAddressLoading}
         rowKey="_id"
         columns={columns}

@@ -126,6 +126,7 @@ const UserManageTable = () => {
         dataSource={paymentDataInformation}
         columns={columns}
         pagination={{ pageSize: 9 }}
+        scroll={{ x: 1500 }}
       />
       <Modal
         title="User Details"

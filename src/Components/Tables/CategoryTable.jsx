@@ -76,6 +76,7 @@ const CategoryTable = ({ data, pagination }) => {
       dataSource={paymentDataInformation}
       columns={columns}
       pagination={pagination}
+      scroll={{ x: 1500 }}
     />
   );
 };

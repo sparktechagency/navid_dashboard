@@ -124,7 +124,7 @@ const SubscirberTable = ({ data, pagination }) => {
         dataSource={paymentDataInformation}
         columns={columns}
         pagination={pagination}
-        scroll={{ x: true }}
+        scroll={{ x: 1500 }}
       />
 
       {/* Approve Modal */}

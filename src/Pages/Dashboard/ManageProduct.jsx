@@ -176,6 +176,7 @@ const ManageProducts = () => {
           dataSource={transformedData}
           columns={columns}
           loading={productsLoading}
+           scroll={{ x: 1500 }}
           rowKey="id"
           pagination={{
             current: products?.pagination?.currentPage || 1,
