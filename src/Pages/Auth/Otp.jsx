@@ -39,6 +39,7 @@ const Otp = () => {
     }
   };
 
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-[#3872F0] p-4">
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg text-center">
@@ -48,7 +49,7 @@ const Otp = () => {
           </Title>
           <Text>
             We sent a 6-digit OTP to{' '}
-            <strong className="text-[#111]">micheal@gmail.com</strong>. Please
+            <strong className="text-[#111]">{localStorage.getItem('email')}</strong>. Please
             enter it below.
           </Text>
         </div>
