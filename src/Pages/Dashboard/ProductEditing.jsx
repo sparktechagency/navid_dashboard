@@ -52,14 +52,15 @@ const ProductEditing = () => {
     if (!productData?.data) return;
 
     const { data } = productData;
+    console.log(data);
     form.setFieldsValue({
-      category: data.category?._id,
-      name: data.name,
-      price: data.price,
-      quantity: data.quantity,
-      description: data.description,
-      whole_sale: data.whole_sale,
-      previous_price: data.previous_price,
+      category: data?.category?._id,
+      name: data?.name,
+      price: data?.price,
+      quantity: data?.quantity,
+      description: data?.description,
+      whole_sale: data?.whole_sale,
+      previous_price: data?.previous_price,
     });
 
     setIsWholesale(data.whole_sale ?? true);
@@ -93,7 +94,7 @@ const ProductEditing = () => {
         }
       });
 
-      const videoPath = data.variantImages.video?.[0];
+      const videoPath = data?.variantImages.video?.[0];
       const videoPreview = videoPath
         ? `https://api.divandioneapp.com/${videoPath}`
         : null;
@@ -129,11 +130,6 @@ const ProductEditing = () => {
     }));
 
     try {
-      if (info.file.size > 100 * 1024 * 1024) {
-        toast.error('Video file is too large. Maximum size is 100MB.');
-        return;
-      }
-
       const videoURL = URL.createObjectURL(info.file);
       urlObjectsRef.current.push(videoURL);
 
@@ -291,18 +287,18 @@ const ProductEditing = () => {
 
       Object.entries(mediaState.variants.data).forEach(([colorKey, data]) => {
         if (data.file) {
-          formData.append(`variants_${colorKey}`, data.file);
+          formData.append(`variants_${colorKey}`, data?.file);
         }
       });
 
-      const response = await updateProduct({ id: productId, data: formData });
-
-      if (response.error) {
-        throw new Error(response.error.message || 'Failed to update product');
-      }
-
-      toast.success('Product updated successfully!');
-      navigate('/manage-products');
+      updateProduct({ id: productId, data: formData })
+        .unwrap()
+        .then((res) => {
+          if (res?.data?.success) {
+            toast.success(res?.data?.message || 'Product updated successfully');
+            navigate('/manage-products');
+          }
+        });
     } catch (error) {
       console.error('Update error:', error);
       toast.error(error.message || 'Error updating product');
@@ -339,7 +335,7 @@ const ProductEditing = () => {
               colorOptions={colorOptions}
               colorImagePreviews={Object.fromEntries(
                 Object.entries(mediaState.variants.data).map(
-                  ([color, data]) => [`variants_${color}`, data.preview]
+                  ([color, data]) => [`variants_${color}`, data?.preview]
                 )
               )}
               productData={productData}

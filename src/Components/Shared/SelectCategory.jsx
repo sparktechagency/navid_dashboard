@@ -24,7 +24,7 @@ function SelectCategory({ category, setCategoryId }) {
         <Select
           placeholder="Select a category"
           loading={categoryLoading}
-          onChange={handleCategoryChange}
+          onChange={(value) => handleCategoryChange(value)}
           options={options}
         ></Select>
       </Form.Item>

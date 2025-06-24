@@ -31,6 +31,7 @@ const AddProduct = () => {
   const [videoFile, setVideoFile] = useState(null);
   const [colorImages, setColorImages] = useState({});
   const [colorImagePreviews, setColorImagePreviews] = useState({});
+  const [categoryId, setCategoryId] = useState(null);
 
   const handleVideoChange = (info) => {
     setVideoFile(info.file);
@@ -106,7 +107,7 @@ const AddProduct = () => {
 
       const formData = new FormData();
 
-      formData.append('category', cleanValues.category);
+      formData.append('category', categoryId);
       formData.append('name', cleanValues.name);
       formData.append('price', cleanValues.price);
       formData.append('quantity', cleanValues.quantity);
@@ -343,7 +344,10 @@ const AddProduct = () => {
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12} md={12} lg={12}>
-                <SelectCategory category="category" />
+                <SelectCategory
+                  setCategoryId={setCategoryId}
+                  category="category"
+                />
               </Col>
             </Row>
             <Form.Item

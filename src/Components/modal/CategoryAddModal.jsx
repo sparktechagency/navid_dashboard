@@ -1,11 +1,11 @@
-import { Form, Input, Upload, Button, message } from 'antd';
+import { Form, Input, Upload, Button, message, Spin } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import { useCreateNewCategoryMutation } from '../../Redux/services/categoriseApis';
 import toast from 'react-hot-toast';
 
 const CategoryAddModal = ({ closeModal }) => {
-  const [createNewCategory, { isCreating }] = useCreateNewCategoryMutation();
+  const [createNewCategory, { isLoading }] = useCreateNewCategoryMutation();
   const [form] = Form.useForm();
   const [file, setFile] = useState(null);
   const [image, setImage] = useState(null);
@@ -103,7 +103,7 @@ const CategoryAddModal = ({ closeModal }) => {
           htmlType="submit"
           className="bg-[var(--orange-600)] border-none text-[var(--white-600)]"
         >
-          {isCreating ? 'Adding...' : 'Add Category'}
+          {isLoading ? <Spin size="small" /> : 'Add Category'}
         </Button>
       </div>
     </Form>
