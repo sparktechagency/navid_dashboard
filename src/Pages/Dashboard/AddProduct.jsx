@@ -1,46 +1,29 @@
-import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Input,
-  Button,
-  Radio,
-  Upload,
-  Row,
-  Col,
-  Tooltip,
-  Select,
-  InputNumber,
-} from "antd";
-import {
-  VideoCameraOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
-import PageHeading from "../../Components/Shared/PageHeading";
-import toast from "react-hot-toast";
-import { useCreateProductsMutation } from "../../Redux/services/ProductApis";
-import SelectCategory from "../../Components/Shared/SelectCategory";
-import { colorOptions } from "./color";
+import React, { useState } from 'react';
+import { Form, Input, Button, Row, Col, InputNumber, Tabs } from 'antd';
+import { useCreateProductsMutation } from '../../Redux/services/ProductApis';
+import toast from 'react-hot-toast';
+import SelectSubCategory from '../../Components/Shared/SelectSubCategory';
+import ProductVideoUpload from '../../Components/AddProduct/ProductVideoUpload';
+import VariantsSection from '../../Components/AddProduct/VariantsSection';
+import ProductTypeSelector from '../../Components/AddProduct/ProductTypeSelector';
+import SelectCategory from '../../Components/Shared/SelectCategory';
+import PageHeading from '../../Components/Shared/PageHeading';
 
 const { TextArea } = Input;
 
 const AddProduct = () => {
   const [createNewProduct, { isLoading }] = useCreateProductsMutation();
   const [form] = Form.useForm();
-  const [productType, setProductType] = useState("wholesaler");
+  const [productType, setProductType] = useState(true);
   const [videoFile, setVideoFile] = useState(null);
   const [colorVariants, setColorVariants] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
-
-  const handleVideoChange = (info) => {
-    setVideoFile(info.file);
-    form.setFieldValue("variants_video", info.file);
-  };
+  const [subCategoryId, setSubCategoryId] = useState(null);
 
   const handleAddVariant = () => {
     setColorVariants([
       ...colorVariants,
-      { color: "", image: null, quantity: 1 },
+      { color: '', image: null, quantity: 1 },
     ]);
   };
 
@@ -49,8 +32,7 @@ const AddProduct = () => {
     updatedVariants[index][field] = value;
     setColorVariants(updatedVariants);
 
-    // Update form values
-    if (field === "color") {
+    if (field === 'color') {
       form.setFieldsValue({
         [`variants_color_${index}`]: value,
       });
@@ -61,8 +43,6 @@ const AddProduct = () => {
     const updatedVariants = [...colorVariants];
     updatedVariants[index].image = info.file;
     setColorVariants(updatedVariants);
-
-    // Update form value
     form.setFieldsValue({
       [`variant_image_${index}`]: info.file,
     });
@@ -72,8 +52,6 @@ const AddProduct = () => {
     const updatedVariants = [...colorVariants];
     updatedVariants[index].quantity = value;
     setColorVariants(updatedVariants);
-
-    // Update form value
     form.setFieldsValue({
       [`variant_quantity_${index}`]: value,
     });
@@ -83,8 +61,6 @@ const AddProduct = () => {
     const updatedVariants = [...colorVariants];
     updatedVariants.splice(index, 1);
     setColorVariants(updatedVariants);
-
-    // Remove form values
     form.setFieldsValue({
       [`variants_color_${index}`]: undefined,
       [`variant_image_${index}`]: undefined,
@@ -95,52 +71,67 @@ const AddProduct = () => {
   const onFinish = async (values) => {
     try {
       if (colorVariants.length === 0) {
-        toast.error("Please add at least one variant");
+        toast.error('Please add at least one variant');
         return;
       }
 
       const formData = new FormData();
 
       // Basic product info
-      formData.append("category", categoryId);
-      formData.append("name", values.name);
-      formData.append("price", values.price);
-      formData.append("description", values.description);
-      formData.append("previous_price", values.previous_price);
-      formData.append("product_type", productType); // 'wholesaler' or 'user'
+      formData.append('category', categoryId);
+      formData.append('sub_category', subCategoryId);
+      formData.append('name', values.name);
+      formData.append('price', values.price);
+      formData.append('description', values.description);
+      formData.append('previous_price', values.previous_price);
+      formData.append('whole_sale', productType);
 
       if (videoFile) {
-        formData.append("variants_video", videoFile);
+        formData.append('variants_video', videoFile);
       }
 
       // Add variants
-      colorVariants.forEach((variant, index) => {
+      colorVariants.forEach((variant) => {
         if (variant.color && variant.image) {
           formData.append(`variants_${variant.color}`, variant.image);
           formData.append(`quantity_${variant.color}`, variant.quantity);
         }
       });
 
-      const res = await createNewProduct({ data: formData });
-      if (res?.data?.success) {
-        toast.success(res?.data?.message || "Product created successfully");
-        form.resetFields();
-        setVideoFile(null);
-        setColorVariants([]);
-        setProductType("wholesaler");
-      } else {
-        toast.error(res?.error?.data?.message || "Product creation failed");
-      }
+      await createNewProduct({ data: formData }).unwrap().then((res) => {
+        if (res?.data?.success) {
+          toast.success(res?.data?.message || 'Product created successfully');
+          form.resetFields();
+          setVideoFile(null);
+          setColorVariants([]);
+          setProductType(true);
+          setCategoryId(null);
+          setSubCategoryId(null);
+        }
+      });
     } catch (error) {
       console.log(error);
-      toast.error("Product creation failed");
+      toast.error('Product creation failed');
     }
   };
 
+  const handleResetForm = () => {
+    form.resetFields();
+    setVideoFile(null);
+    setColorVariants([]);
+    setProductType(true);
+  };
+  const [activeTab, setActiveTab] = useState('1');
+  const onTabChange = (key) => {
+    setActiveTab(key);
+  };
   return (
     <div className="bg-white min-h-full p-6 rounded-xl">
       <PageHeading text={"Manage Products"} />
-
+      <Tabs activeKey={activeTab} onChange={onTabChange} centered className="mb-6">
+        <Tabs.TabPane tab="Add product" key="1" />
+        <Tabs.TabPane tab="All variants" key="2" />
+      </Tabs>
       <Form
         requiredMark={false}
         form={form}
@@ -153,168 +144,22 @@ const AddProduct = () => {
         }}
       >
         <Row gutter={[16, 16]}>
-          {/* Product Video Upload */}
-          <Col xs={24} sm={12} md={12} lg={8}>
-            {videoFile ? (
-              <div>
-                <video
-                  src={URL.createObjectURL(videoFile)}
-                  controls
-                  className="w-full"
-                />
-                <Button
-                  onClick={() => {
-                    setVideoFile(null);
-                    form.setFieldValue("variants_video", null);
-                  }}
-                  className="!mt-2 !bg-red-500 !text-white"
-                >
-                  Remove Video
-                </Button>
-              </div>
-            ) : (
-              <Form.Item label="Upload Product Video" name="variants_video">
-                <Upload
-                  listType="picture-card"
-                  file={videoFile}
-                  onChange={handleVideoChange}
-                  beforeUpload={() => false}
-                  accept="video/*"
-                  maxCount={1}
-                >
-                  <div>
-                    <VideoCameraOutlined />
-                    <div className="mt-2 text-sm">Browse Video</div>
-                  </div>
-                </Upload>
-              </Form.Item>
-            )}
+          {/* Left Column */}
+          {activeTab === '1' && <Col xs={24} sm={12} md={12} lg={8}>
+            <ProductVideoUpload
+              videoFile={videoFile}
+              setVideoFile={setVideoFile}
+              form={form}
+            />
+            <Button type="primary" onClick={() => setActiveTab('2')}>Add Variant</Button>
+          </Col>}
 
-            {/* Variants Section */}
-            <div className="mt-4">
-              <div className="flex justify-between items-center mb-4">
-                <label className="block font-medium">Product Variants</label>
-                <Button
-                  type="dashed"
-                  onClick={handleAddVariant}
-                  icon={<PlusOutlined />}
-                >
-                  Add Variant
-                </Button>
-              </div>
-
-              {colorVariants.map((variant, index) => (
-                <div key={index} className="mb-4 p-3 border rounded">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-medium">Variant {index + 1}</h4>
-                    <Button
-                      danger
-                      size="small"
-                      icon={<DeleteOutlined />}
-                      onClick={() => removeVariant(index)}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block mb-1 text-sm">Color</label>
-                      <Select
-                        placeholder="Select color"
-                        value={variant.color}
-                        onChange={(value) =>
-                          handleVariantChange(index, "color", value)
-                        }
-                        className="w-full"
-                      >
-                        {colorOptions.map((color) => (
-                          <Select.Option key={color.value} value={color.value}>
-                            <div className="flex items-center">
-                              <div
-                                className="w-4 h-4 rounded-full mr-2"
-                                style={{ backgroundColor: color.color }}
-                              />
-                              {color.label}
-                            </div>
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-sm">Quantity</label>
-                      <InputNumber
-                        min={1}
-                        value={variant.quantity}
-                        onChange={(value) =>
-                          handleVariantQuantityChange(value, index)
-                        }
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-3">
-                    <label className="block mb-1 text-sm">Image</label>
-                    {variant.image ? (
-                      <div className="relative">
-                        <img
-                          src={URL.createObjectURL(variant.image)}
-                          alt={`Variant ${index + 1}`}
-                          className="w-full h-24 object-contain border rounded"
-                        />
-                        <Button
-                          size="small"
-                          danger
-                          className="absolute top-1 right-1"
-                          onClick={() =>
-                            handleVariantChange(index, "image", null)
-                          }
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ) : (
-                      <Upload
-                        listType="picture-card"
-                        showUploadList={false}
-                        beforeUpload={() => false}
-                        accept="image/*"
-                        onChange={(info) =>
-                          handleVariantImageChange(info, index)
-                        }
-                      >
-                        <div>
-                          <PlusOutlined />
-                          <div className="mt-2">Upload</div>
-                        </div>
-                      </Upload>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Col>
-
-          {/* Product Details */}
-          <Col xs={24} sm={12} md={12} lg={16}>
-            {/* Product Type Selection */}
-            <Form.Item
-              label="Product Type"
-              name="product_type"
-              rules={[
-                { required: true, message: "Please select product type" },
-              ]}
-            >
-              <Radio.Group
-                onChange={(e) => setProductType(e.target.value)}
-                value={productType}
-                optionType="button"
-                buttonStyle="solid"
-              >
-                <Radio.Button value="wholesaler">Wholesaler</Radio.Button>
-                <Radio.Button value="user">Only User</Radio.Button>
-              </Radio.Group>
-            </Form.Item>
+          {/* Right Column */}
+          {activeTab === '1' && <Col xs={24} sm={12} md={12} lg={16}>
+            <ProductTypeSelector
+              productType={productType}
+              setProductType={setProductType}
+            />
 
             <Row gutter={24}>
               <Col xs={24} sm={12} md={12} lg={12}>
@@ -347,7 +192,22 @@ const AddProduct = () => {
             </Row>
 
             <Row gutter={16}>
-              <Col xs={24} sm={12} md={12} lg={24}>
+              <Col xs={24} sm={12} md={12} lg={12}>
+                <Form.Item
+                  label="Quantity"
+                  name="quantity"
+                  rules={[
+                    { required: true, message: "Please enter the quantity" },
+                  ]}
+                >
+                  <InputNumber
+                    placeholder="Enter quantity"
+                    min={0}
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={12} lg={12}>
                 <Form.Item
                   label="Discount Amount"
                   name="previous_price"
@@ -355,16 +215,24 @@ const AddProduct = () => {
                     { required: true, message: "Please enter the discount" },
                   ]}
                 >
-                  <Input placeholder="please enter discount" />
+                  <InputNumber
+                    placeholder="Enter discount"
+                    style={{ width: "100%" }}
+                  />
                 </Form.Item>
               </Col>
             </Row>
 
             <Row gutter={16}>
-              <Col xs={24} sm={12} md={12} lg={12}>
+              <Col xs={24} sm={12} md={12} lg={24}>
                 <SelectCategory
                   setCategoryId={setCategoryId}
                   category="category"
+                />
+                <SelectSubCategory
+                  setSubCategoryId={setSubCategoryId}
+                  subCategory="subCategory"
+                  categoryId={categoryId}
                 />
               </Col>
             </Row>
@@ -386,12 +254,7 @@ const AddProduct = () => {
               <Button
                 type="default"
                 className="w-full"
-                onClick={() => {
-                  form.resetFields();
-                  setVideoFile(null);
-                  setColorVariants([]);
-                  setProductType("wholesaler");
-                }}
+                onClick={handleResetForm}
               >
                 Cancel
               </Button>
@@ -404,7 +267,15 @@ const AddProduct = () => {
                 Publish
               </Button>
             </div>
-          </Col>
+          </Col>}
+          {activeTab === '2' && <VariantsSection
+            colorVariants={colorVariants}
+            handleAddVariant={handleAddVariant}
+            handleVariantChange={handleVariantChange}
+            handleVariantImageChange={handleVariantImageChange}
+            handleVariantQuantityChange={handleVariantQuantityChange}
+            removeVariant={removeVariant}
+          />}
         </Row>
       </Form>
     </div>

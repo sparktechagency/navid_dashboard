@@ -12,16 +12,15 @@ export const ProductApis = baseApis.injectEndpoints({
     }),
     createProducts: builder.mutation({
       query: ({ data }) => {
-        const formData = new FormData();
         Object.keys(data)?.map((key) => {
           if (data[key]) {
-            formData.append(key, data[key]);
+            data.append(key, data[key]);
           }
         });
         return {
           url: '/product/create',
           method: 'POST',
-          body: formData,
+          body: data,
         };
       },
       invalidatesTags: ['product'],

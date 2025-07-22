@@ -39,6 +39,15 @@ export const categoriseApis = baseApis.injectEndpoints({
       },
       invalidatesTags: ['category'],
     }),
+    // sub categroy
+    getSubCategory: builder.query({
+      query: ({ id }) => ({
+        url: '/service/get-all',
+        method: 'GET',
+        params: { category: id },
+      }),
+      providesTags: ['subCategory'],
+    }),
   }),
 });
 
@@ -47,4 +56,5 @@ export const {
   useDeleteCategoryMutation,
   useCreateNewCategoryMutation,
   useUpdateCategoryMutation,
+  useGetSubCategoryQuery,
 } = categoriseApis;

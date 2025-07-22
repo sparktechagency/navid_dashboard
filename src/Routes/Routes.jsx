@@ -9,17 +9,16 @@ import { createBrowserRouter } from "react-router";
 import UserManage from "../Pages/Dashboard/UserManage";
 import TermsCondition from "../Pages/Dashboard/TermsCondition";
 import PrivacyPolicy from "../Pages/Dashboard/PrivacyPolicy";
-import Profile from "../Pages/Dashboard/Profile.jsx";
-import CategoryManage from "../Pages/Dashboard/CategoryManage.jsx";
+import Profile from "../Pages/Dashboard/Profile";
+import CategoryManage from "../Pages/Dashboard/CategoryManage";
+import SubCategoryManage from "../Pages/Dashboard/SubCategoryManage";
 import PickupAddress from "../Pages/Dashboard/PickupAddress";
-import ManageOrder from "../Pages/Dashboard/ManageOrders.jsx";
-import AddProduct from "../Pages/Dashboard/AddProduct.jsx";
-import AllUser from "../Pages/Dashboard/AllUser.jsx";
-import PrivateRoute from "./PrivetRoute.jsx";
-import ProductEditing from "../Pages/Dashboard/ProductEditing.jsx";
-import ManageProducts from "../Pages/Dashboard/ManageProduct.jsx";
-import Test2 from "../Pages/Dashboard/Test2.jsx";
-
+import ManageOrder from "../Pages/Dashboard/ManageOrders";
+import AddProduct from "../Pages/Dashboard/AddProduct";
+import AllUser from "../Pages/Dashboard/AllUser";
+import PrivateRoute from "./PrivetRoute";
+import ProductEditing from "../Pages/Dashboard/ProductEditing";
+import ManageProducts from "../Pages/Dashboard/ManageProduct"
 export const Routes = createBrowserRouter([
   {
     path: "/",
@@ -40,10 +39,6 @@ export const Routes = createBrowserRouter([
       {
         path: "/subscriber-management",
         element: <AllUser />,
-      },
-      {
-        path: "/test",
-        element: <Test2 />,
       },
       {
         path: "/add-product",
@@ -68,6 +63,10 @@ export const Routes = createBrowserRouter([
       {
         path: "/manage-category",
         element: <CategoryManage />,
+      },
+      {
+        path: "/manage-subcategory",
+        element: <SubCategoryManage />,
       },
       {
         path: "/terms-&-condition",
